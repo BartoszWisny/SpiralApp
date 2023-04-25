@@ -7,17 +7,27 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-<!--    <com.github.siyamed.shapeimageview.mask.PorterShapeImageView-->
-<!--        android:layout_width="150dp"-->
-<!--        android:layout_height="150dp"-->
-<!--        android:src="@drawable/background_dark_mode"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:siBorderColor="@color/gray_1"-->
-<!--        app:siBorderWidth="8dp"-->
-<!--        app:siShape="@drawable/trapezoid_image_shape"-->
-<!--        app:siSquare="true" />-->
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/main_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="-20dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_menu_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_menu_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_menu_bar_shape"
+        app:itemIconTint="@color/bottom_menu_bar_icon_text_color"
+        app:itemTextColor="@color/bottom_menu_bar_icon_text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_menu_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

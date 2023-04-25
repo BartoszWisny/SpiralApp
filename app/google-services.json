@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "659318579028",
+    "firebase_url": "https://spiralapp-828a8-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "spiralapp-828a8",
+    "storage_bucket": "spiralapp-828a8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659318579028:android:5056c7c6b45e7dd76772c1",
+        "android_client_info": {
+          "package_name": "com.example.spiral"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "659318579028-773rghva4psittgs3q02du9kmc5gtutg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCncDBb1ZG3Im7oa9y2fUUKM5hrveGDdnA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "659318579028-773rghva4psittgs3q02du9kmc5gtutg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
