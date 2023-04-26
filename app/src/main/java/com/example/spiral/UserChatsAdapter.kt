@@ -11,13 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 
-
 class UserChatsAdapter(private val data: List<TestMessage>): RecyclerView.Adapter<UserChatsAdapter.ViewHolder>() {
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var userChatsListItemLayout: ConstraintLayout = view.findViewById(R.id.user_chats_list_item_layout)
-        var userImage: ImageView = view.findViewById(R.id.user_image)
-        var userName: TextView = view.findViewById(R.id.user_name)
-        var userLastMessage: TextView = view.findViewById(R.id.user_last_message)
+        var userImage: ImageView = view.findViewById(R.id.user_chats_image)
+        var userName: TextView = view.findViewById(R.id.user_chats_name)
+        var userLastMessage: TextView = view.findViewById(R.id.user_chats_last_message)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -26,8 +25,9 @@ class UserChatsAdapter(private val data: List<TestMessage>): RecyclerView.Adapte
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Picasso.get().load(R.drawable.spiral_logo).resize(1000, 1000).centerCrop()
-            .transform(RoundedCornersTransformation(500, 20)).into(holder.userImage)
+        holder.userImage.setImageResource(R.drawable.user_profile_image)
+//        Picasso.get().load(R.drawable.spiral_logo).resize(1000, 1000).centerCrop()
+//            .transform(RoundedCornersTransformation(500, 20)).into(holder.userImage)
         holder.userName.text = data[position].user
         holder.userLastMessage.text = data[position].text
 
