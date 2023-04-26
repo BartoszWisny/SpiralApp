@@ -4,16 +4,13 @@
     <item
         android:id="@+id/user_friends"
         android:icon="@drawable/user_friends_icon"
-        android:onClick="onUserFriendsClick"
         android:title="Friends" />
     <item
         android:id="@+id/user_chats"
         android:icon="@drawable/user_chats_icon"
-        android:onClick="onUserChatsClick"
         android:title="Chats" />
     <item
         android:id="@+id/user_profile"
         android:icon="@drawable/user_profile_icon"
-        android:onClick="onUserProfileClick"
         android:title="Profile" />
 </menu>

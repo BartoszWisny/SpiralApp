@@ -1,27 +1,29 @@
 package com.example.spiral
 
-import android.content.res.ColorStateList
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 var chat = Chat()
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mainLayout: ConstraintLayout
+    private lateinit var title: TextView
     private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mainLayout = findViewById(R.id.main_layout)
+        title = findViewById(R.id.user_layout_title)
         bottomNavigationView = findViewById(R.id.bottom_menu_bar)
 
         when (applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
@@ -43,16 +45,56 @@ class MainActivity : AppCompatActivity() {
         chat.viewPager = findViewById(R.id.main_pager)
         chat.viewPager?.adapter = chat.tabAdapter
         chat.viewPager?.currentItem = 1
+        bottomNavigationView.selectedItemId = R.id.user_chats
+
+        bottomNavigationView.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.user_friends -> chat.viewPager?.currentItem = 0
+                R.id.user_chats -> chat.viewPager?.currentItem = 1
+                R.id.user_profile -> chat.viewPager?.currentItem = 2
+                else -> chat.viewPager?.currentItem = 1
+            }
+
+            return@setOnItemSelectedListener true
+        }
+
+        chat.viewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                bottomNavigationView.selectedItemId = when (position) {
+                    0 -> R.id.user_friends
+                    1 -> R.id.user_chats
+                    2 -> R.id.user_profile
+                    else -> R.id.user_chats
+                }
+
+                title.text = when (position) {
+                    0 -> "Friends"
+                    1 -> "Chats"
+                    2 -> "Profile"
+                    else -> "Chats"
+                }
+            }
+        })
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (chat.viewPager?.currentItem == 1) {
                     finish()
                 } else {
                     chat.viewPager?.currentItem = 1
-                    chat.viewPager?.adapter = chat.tabAdapter
                 }
             }
         })
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putCharSequence("title", title.text)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        title.text = savedInstanceState.getCharSequence("title")
+        super.onRestoreInstanceState(savedInstanceState)
     }
 
     inner class TabAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
@@ -76,20 +118,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    fun onUserFriendsClick(item: MenuItem) {
-        chat.viewPager?.currentItem = 0
-        chat.viewPager?.adapter = chat.tabAdapter
-    }
-
-    fun onUserChatsClick(item: MenuItem) {
-        chat.viewPager?.currentItem = 1
-        chat.viewPager?.adapter = chat.tabAdapter
-    }
-
-    fun onUserProfileClick(item: MenuItem) {
-        chat.viewPager?.currentItem = 2
-        chat.viewPager?.adapter = chat.tabAdapter
     }
 }
