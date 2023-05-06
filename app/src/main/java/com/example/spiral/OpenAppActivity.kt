@@ -35,7 +35,9 @@ class OpenAppActivity : AppCompatActivity() {
             override fun onTransitionChange(p0: MotionLayout?, startId: Int, endId: Int, progress: Float) {}
 
             override fun onTransitionCompleted(p0: MotionLayout?, currentId: Int) {
-                val intent = Intent(this@OpenAppActivity, MainActivity::class.java)
+//                val intent = Intent(this@OpenAppActivity, MainActivity::class.java)
+//                startActivity(intent)
+                val intent = Intent(this@OpenAppActivity, LoginActivity::class.java)
                 startActivity(intent)
             }
 
@@ -52,5 +54,15 @@ class OpenAppActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         })
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBundle("animationState", openAppLayout.transitionState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        openAppLayout.transitionState = savedInstanceState.getBundle("animationState")
     }
 }
