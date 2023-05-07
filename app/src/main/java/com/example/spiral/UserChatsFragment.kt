@@ -2,7 +2,6 @@ package com.example.spiral
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,9 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
+lateinit var userChatsAdapter: UserChatsAdapter
+
 class UserChatsFragment : Fragment() {
     private lateinit var userChatsListView: RecyclerView
-    private lateinit var userChatsAdapter: UserChatsAdapter
     private lateinit var userChatsRefresh: SwipeRefreshLayout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -46,7 +46,7 @@ class UserChatsFragment : Fragment() {
 
         val testData = arrayListOf<TestMessage>() // test data for RecyclerView
         for (i in 1..10) {
-            testData.add(TestMessage())
+            testData.add(TestMessage(i))
         }
 
         userChatsAdapter = UserChatsAdapter(testData)

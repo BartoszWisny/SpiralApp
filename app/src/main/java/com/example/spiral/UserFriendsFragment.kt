@@ -8,13 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
+lateinit var userFriendsAdapter: UserFriendsAdapter
+
 class UserFriendsFragment : Fragment() {
     private lateinit var userFriendsListView: RecyclerView
-    private lateinit var userFriendsAdapter: UserFriendsAdapter
     private lateinit var userFriendsRefresh: SwipeRefreshLayout
 
     override fun onCreateView(
@@ -54,7 +54,7 @@ class UserFriendsFragment : Fragment() {
 
         val testData = arrayListOf<TestFriendData>() // test data for RecyclerView
         for (i in 1..16) {
-            testData.add(TestFriendData())
+            testData.add(TestFriendData(i))
         }
 
         userFriendsAdapter = UserFriendsAdapter(testData, numberOfColumns)

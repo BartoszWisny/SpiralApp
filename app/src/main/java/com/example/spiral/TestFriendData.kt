@@ -1,6 +1,6 @@
 package com.example.spiral
 
-class TestFriendData {
-    var user = "user_friends_name"
+class TestFriendData(val id: Int) {
+    var user = "friend_$id"
     // var text = "this is test message from user"
 }

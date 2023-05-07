@@ -10,6 +10,7 @@
         <item name="android:navigationBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:textColor">@color/gray_1</item>
         <item name="android:textColorHint">@color/gray_4</item>
+        <item name="android:editTextColor">@color/gray_1</item>
         <item name="fontFamily">@font/lato</item>
     </style>
 </resources>

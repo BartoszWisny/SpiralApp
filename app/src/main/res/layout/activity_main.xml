@@ -20,27 +20,129 @@
 
         <TextView
             android:id="@+id/user_layout_title"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0.8"
             android:gravity="center_horizontal|center_vertical"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="Chats"
             android:textSize="32sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2" />
+
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/top_menu_bar_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/top_menu_bar_shape"
+        android:orientation="horizontal"
+        android:translationZ="1dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/user_layout_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.9"
+            android:background="@null"
+            android:gravity="center_horizontal|center_vertical"
+            android:hint="Search chat by username"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingLeft="10dp"
+            android:paddingTop="9dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="9dp"
+            android:textSize="24sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/user_search_button"
+        android:layout_width="40dp"
+        android:layout_height="46dp"
+        android:background="@color/transparent"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        android:onClick="searchClick"
+        android:padding="0dp"
+        android:stateListAnimator="@null"
+        android:translationZ="1dp"
+        app:icon="@drawable/user_search_icon"
+        app:iconPadding="0dp"
+        app:iconSize="32dp"
+        app:iconTint="@color/icon"
+        app:layout_constraintEnd_toStartOf="@+id/user_settings_button"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/user_settings_button"
+        android:layout_width="40dp"
+        android:layout_height="46dp"
+        android:background="@color/transparent"
+        android:elevation="10dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        android:onClick="settingsClick"
+        android:padding="0dp"
+        android:stateListAnimator="@null"
+        android:translationZ="1dp"
+        app:icon="@drawable/user_settings_icon"
+        app:iconSize="32dp"
+        app:iconTint="@color/icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/user_search_close_button"
+        android:layout_width="40dp"
+        android:layout_height="46dp"
+        android:background="@color/transparent"
+        android:elevation="10dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        android:onClick="searchCloseClick"
+        android:padding="0dp"
+        android:stateListAnimator="@null"
+        android:translationZ="1dp"
+        android:visibility="invisible"
+        app:icon="@drawable/user_search_close_icon"
+        app:iconSize="32dp"
+        app:iconTint="@color/icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/main_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="-20dp"
-        android:layout_marginBottom="-20dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_menu_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_menu_bar" />
+        app:layout_constraintTop_toBottomOf="@+id/top_menu_bar">
+
+    </androidx.viewpager2.widget.ViewPager2>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_menu_bar"

@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 
 class UserProfileAdapter(private val data: List<TestUserData>): RecyclerView.Adapter<UserProfileAdapter.ViewHolder>() {
+    // private var profilesData = arrayListOf<TestUserData>()
+
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var userImage: ImageView = view.findViewById(R.id.user_profile_image)
         var userName: TextView = view.findViewById(R.id.user_profile_name)
@@ -27,5 +29,18 @@ class UserProfileAdapter(private val data: List<TestUserData>): RecyclerView.Ada
 
     override fun getItemCount(): Int {
         return data.size
+    }
+
+    fun filterProfiles(text: String) {
+        /* val filteredList = arrayListOf<TestUserData>()
+
+        for (item in data) {
+            if (item.user.lowercase().contains(text.lowercase())) {
+                filteredList.add(item)
+            }
+        }
+
+        data = filteredList
+        notifyDataSetChanged() */
     }
 }

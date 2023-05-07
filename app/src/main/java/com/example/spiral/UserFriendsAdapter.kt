@@ -14,8 +14,10 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 
 class UserFriendsAdapter(private val data: List<TestFriendData>, private val numberOfColumns: Int):
     RecyclerView.Adapter<UserFriendsAdapter.ViewHolder>() {
+    private var friendsData = data
+
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var userFriendsListItemLayout: ConstraintLayout = view.findViewById(R.id.user_friends_list_item_layout)
+//        var userFriendsListItemLayout: ConstraintLayout = view.findViewById(R.id.user_friends_list_item_layout)
         var userImage: ImageView = view.findViewById(R.id.user_friends_image)
         var userName: TextView = view.findViewById(R.id.user_friends_name)
     }
@@ -29,18 +31,31 @@ class UserFriendsAdapter(private val data: List<TestFriendData>, private val num
         holder.userImage.setImageResource(R.drawable.user_profile_image)
 //        Picasso.get().load(R.drawable.user_profile_image).resize(1000, 1000).centerCrop()
 //            .transform(RoundedCornersTransformation(50, 0)).into(holder.userImage)
-        holder.userName.text = data[position].user
+        holder.userName.text = friendsData[position].user
 
-        if (position / numberOfColumns == 0) {
-            holder.userFriendsListItemLayout.updatePadding(0, 50, 0, 0)
-        }
-
-        if (position / numberOfColumns == (data.size - 1) / numberOfColumns) {
-            holder.userFriendsListItemLayout.updatePadding(0, 0, 0, 50)
-        }
+//        if (position / numberOfColumns == 0) {
+//            holder.userFriendsListItemLayout.updatePadding(0, 50, 0, 0)
+//        }
+//
+//        if (position / numberOfColumns == (data.size - 1) / numberOfColumns) {
+//            holder.userFriendsListItemLayout.updatePadding(0, 0, 0, 50)
+//        }
     }
 
     override fun getItemCount(): Int {
-        return data.size
+        return friendsData.size
+    }
+
+    fun filterFriends(text: String) {
+        val filteredList = arrayListOf<TestFriendData>()
+
+        for (item in data) {
+            if (item.user.lowercase().contains(text.lowercase())) {
+                filteredList.add(item)
+            }
+        }
+
+        friendsData = filteredList
+        notifyDataSetChanged()
     }
 }

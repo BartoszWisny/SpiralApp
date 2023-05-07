@@ -11,9 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
+lateinit var userProfileAdapter: UserProfileAdapter
+
 class UserProfileFragment : Fragment() {
     private lateinit var userProfileListView: RecyclerView
-    private lateinit var userProfileAdapter: UserProfileAdapter
     private lateinit var userProfileRefresh: SwipeRefreshLayout
 
     override fun onCreateView(
