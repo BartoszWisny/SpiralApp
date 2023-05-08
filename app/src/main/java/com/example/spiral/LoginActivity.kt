@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.TextUtils
@@ -21,11 +23,26 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.Scopes
 import com.google.android.material.snackbar.Snackbar
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.http.HttpTransport
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.services.people.v1.PeopleService
+import com.google.api.services.people.v1.model.Birthday
+import com.google.api.services.people.v1.model.Gender
+import com.google.api.services.people.v1.model.Person
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
+import java.net.URL
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var loginLayout: ConstraintLayout
@@ -37,6 +54,9 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInOptions: GoogleSignInOptions
     private lateinit var googleViewHelper: View
     private lateinit var database: DatabaseReference
+    private val httpTransport: HttpTransport = NetHttpTransport()
+    private val gsonFactory: GsonFactory = GsonFactory()
+    private var storage = FirebaseStorage.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +126,27 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun formattedDate(dayOfMonth: Int, month: Int, year: Int): String {
+        val formattedTime: String = when {
+            month < 10 -> {
+                if (dayOfMonth < 10) {
+                    "0${dayOfMonth}.0${month + 1}.${year}"
+                } else {
+                    "${dayOfMonth}.0${month + 1}.${year}"
+                }
+            }
+            else -> {
+                if (dayOfMonth < 10) {
+                    "0${dayOfMonth}.${month + 1}.${year}"
+                } else {
+                    "${dayOfMonth}.${month + 1}.${year}"
+                }
+            }
+        }
+
+        return formattedTime
+    }
+
     private fun login(email: String, password: String, view: View) {
         authentication.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
@@ -152,36 +193,80 @@ class LoginActivity : AppCompatActivity() {
                     val account: GoogleSignInAccount? = task.result
 
                     if (account != null) {
-                        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                        authentication.signInWithCredential(credential).addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                database = FirebaseDatabase.getInstance().reference
-                                val userId = authentication.currentUser?.uid!!
-                                // TODO
-//                                database.child("users").child(userId).setValue(User(userId, firstName, surname, dateOfBirth, gender,
-//                                    email))
-                                val intent = Intent(this, MainActivity::class.java)
-                                startActivity(intent)
-                            } else {
-                                val snackbar = Snackbar.make(googleViewHelper, "Error: Google login failed!",
-                                    Snackbar.LENGTH_SHORT)
-                                val snackbarView = snackbar.view
-                                snackbarView.setBackgroundResource(R.drawable.item_shape)
-                                snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
-                                val textView: TextView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text)
-                                textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                                snackbar.show()
+                        val firstName: String? = account.givenName
+                        val surname: String? = account.familyName
+                        var dateOfBirth: String? = null
+                        var gender: String? = null
+                        val email: String? = account.email
+                        val executor: ExecutorService = Executors.newSingleThreadExecutor()
+
+                        executor.execute {
+                            val photoUrl = URL(account.photoUrl.toString().dropLast(4).plus("1000-c"))
+                            val photo: Bitmap = BitmapFactory.decodeStream(photoUrl.openConnection().getInputStream())
+                            val scopes = arrayListOf<String>()
+                            scopes.add(Scopes.PROFILE)
+                            val accountCredential: GoogleAccountCredential = GoogleAccountCredential.usingOAuth2(this,
+                                scopes)
+                            accountCredential.selectedAccountName = email
+                            val service: PeopleService = PeopleService.Builder(httpTransport, gsonFactory, accountCredential)
+                                .setApplicationName(getString(R.string.app_name)).build()
+                            val profile: Person = service.people().get("people/me").setRequestMaskIncludeField("person.birthdays," +
+                                "person.genders").execute()
+                            val genders: List<Gender>? = profile.genders
+
+                            if (genders != null && genders.isNotEmpty()) {
+                                gender = genders[0].value.replaceFirstChar(Char::titlecase)
+                            }
+
+                            val birthdays: List<Birthday>? = profile.birthdays
+
+                            if (birthdays != null && birthdays.isNotEmpty()) {
+                                val birthday: Birthday = birthdays[0]
+
+                                if (birthday.date != null && birthday.date.year != null && birthday.date.month != null
+                                    && birthday.date.day != null) {
+                                    dateOfBirth = formattedDate(birthday.date.day, birthday.date.month, birthday.date.year)
+                                }
+                            }
+
+                            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                            authentication.signInWithCredential(credential).addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    database = FirebaseDatabase.getInstance().reference
+                                    val userId = authentication.currentUser?.uid!!
+                                    database.child("users").child(userId).setValue(User(userId, firstName, surname,
+                                        dateOfBirth, gender, email))
+                                    val storageReference = storage.getReferenceFromUrl("gs://spiralapp-828a8.appspot.com")
+                                    val photoReference = storageReference.child("users").child(userId)
+                                    val byteArrayOutputStream = ByteArrayOutputStream()
+                                    photo.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                                    val data: ByteArray = byteArrayOutputStream.toByteArray()
+                                    photoReference.putBytes(data)
+                                    val intent = Intent(this, MainActivity::class.java)
+                                    startActivity(intent)
+                                } else {
+                                    val snackbar = Snackbar.make(googleViewHelper, "Error: Google login failed!",
+                                        Snackbar.LENGTH_SHORT)
+                                    val snackbarView = snackbar.view
+                                    snackbarView.setBackgroundResource(R.drawable.item_shape)
+                                    snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText,
+                                        application.theme))
+                                    val textView: TextView = snackbarView
+                                        .findViewById(com.google.android.material.R.id.snackbar_text)
+                                    textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                                    snackbar.show()
+                                }
                             }
                         }
+                    } else {
+                        val snackbar = Snackbar.make(googleViewHelper, "Error: Google login failed!", Snackbar.LENGTH_SHORT)
+                        val snackbarView = snackbar.view
+                        snackbarView.setBackgroundResource(R.drawable.item_shape)
+                        snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
+                        val textView: TextView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text)
+                        textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                        snackbar.show()
                     }
-                } else {
-                    val snackbar = Snackbar.make(googleViewHelper, "Error: Google login failed!", Snackbar.LENGTH_SHORT)
-                    val snackbarView = snackbar.view
-                    snackbarView.setBackgroundResource(R.drawable.item_shape)
-                    snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
-                    val textView: TextView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text)
-                    textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                    snackbar.show()
                 }
             }
     }
