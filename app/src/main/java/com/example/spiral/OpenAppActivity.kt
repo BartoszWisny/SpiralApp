@@ -8,14 +8,17 @@ import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.motion.widget.MotionLayout.TransitionListener
 import androidx.core.content.res.ResourcesCompat
+import com.google.firebase.auth.FirebaseAuth
 
 class OpenAppActivity : AppCompatActivity() {
     private lateinit var openAppLayout: MotionLayout
+    private lateinit var authentication: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_open_app)
         openAppLayout = findViewById(R.id.open_app_layout)
+        authentication = FirebaseAuth.getInstance()
 
         when (applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
             Configuration.UI_MODE_NIGHT_YES -> {
@@ -35,10 +38,15 @@ class OpenAppActivity : AppCompatActivity() {
             override fun onTransitionChange(p0: MotionLayout?, startId: Int, endId: Int, progress: Float) {}
 
             override fun onTransitionCompleted(p0: MotionLayout?, currentId: Int) {
-//                val intent = Intent(this@OpenAppActivity, MainActivity::class.java)
-//                startActivity(intent)
-                val intent = Intent(this@OpenAppActivity, LoginActivity::class.java)
-                startActivity(intent)
+                val currentUser = authentication.currentUser
+
+                if (currentUser != null) {
+                    val intent = Intent(this@OpenAppActivity, MainActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    val intent = Intent(this@OpenAppActivity, LoginActivity::class.java)
+                    startActivity(intent)
+                }
             }
 
             override fun onTransitionTrigger(p0: MotionLayout?, triggerId: Int, positive: Boolean, progress: Float) {}

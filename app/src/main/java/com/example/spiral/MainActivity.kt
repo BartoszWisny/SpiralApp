@@ -26,7 +26,7 @@ var chat = Chat()
 class MainActivity : AppCompatActivity() {
     private lateinit var mainLayout: ConstraintLayout
     private lateinit var title: TextView
-    private lateinit var search: EditText
+    private lateinit var searchText: EditText
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var topMenuBar: LinearLayout
     private lateinit var topMenuBarSearch: LinearLayout
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         mainLayout = findViewById(R.id.main_layout)
         title = findViewById(R.id.user_layout_title)
-        search = findViewById(R.id.user_layout_search)
+        searchText = findViewById(R.id.user_layout_search)
         bottomNavigationView = findViewById(R.id.bottom_menu_bar)
         topMenuBar = findViewById(R.id.top_menu_bar)
         topMenuBarSearch = findViewById(R.id.top_menu_bar_search)
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                     else -> "Chats"
                 }
 
-                search.hint = when (position) {
+                searchText.hint = when (position) {
                     0 -> "Search friend by username"
                     1 -> "Search chat by username"
                     2 -> "Search profile by username"
@@ -106,15 +106,15 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        search.addTextChangedListener(object: TextWatcher {
+        searchText.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 when (chat.viewPager?.currentItem) {
-                    0 -> userFriendsAdapter.filterFriends(search.text.toString())
-                    1 -> userChatsAdapter.filterChats(search.text.toString())
-                    2 -> userProfileAdapter.filterProfiles(search.text.toString())
-                    else -> userChatsAdapter.filterChats(search.text.toString())
+                    0 -> userFriendsAdapter.filterFriends(searchText.text.toString())
+                    1 -> userChatsAdapter.filterChats(searchText.text.toString())
+                    2 -> userProfileAdapter.filterProfiles(searchText.text.toString())
+                    else -> userChatsAdapter.filterChats(searchText.text.toString())
                 }
             }
 
@@ -123,6 +123,9 @@ class MainActivity : AppCompatActivity() {
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                val rootView: View = findViewById(android.R.id.content)
+                searchCloseClick(rootView)
+
                 if (chat.viewPager?.currentItem == 1) {
                     val intent = Intent(Intent.ACTION_MAIN)
                     intent.addCategory(Intent.CATEGORY_HOME)
@@ -182,14 +185,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun searchCloseClick(view: View?) {
+        val inputMethodManager =
+            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        inputMethodManager?.hideSoftInputFromWindow(view?.windowToken, 0)
         topMenuBar.visibility = View.VISIBLE
         searchButton.visibility = View.VISIBLE
         settingsButton.visibility = View.VISIBLE
         topMenuBarSearch.visibility = View.INVISIBLE
         searchCloseButton.visibility = View.INVISIBLE
-        search.setText("")
-        val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        inputMethodManager?.hideSoftInputFromWindow(view?.windowToken, 0)
+        searchText.setText("")
     }
 }

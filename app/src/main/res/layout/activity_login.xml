@@ -40,7 +40,7 @@
             app:layout_constraintTop_toTopOf="@+id/login_app_logo" />
 
         <EditText
-            android:id="@+id/login_username"
+            android:id="@+id/login_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
@@ -48,8 +48,8 @@
             android:layout_marginRight="20dp"
             android:background="@drawable/item_shape"
             android:gravity="center_horizontal|center_vertical"
-            android:hint="Username"
-            android:inputType="text"
+            android:hint="Email address"
+            android:inputType="textEmailAddress"
             android:padding="10dp"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -71,20 +71,20 @@
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/login_username" />
+            app:layout_constraintTop_toBottomOf="@+id/login_email" />
 
         <Button
-            android:id="@+id/login_button"
+            android:id="@+id/login_email_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="100dp"
+            android:layout_marginLeft="50dp"
             android:layout_marginTop="15dp"
-            android:layout_marginRight="100dp"
+            android:layout_marginRight="50dp"
             android:background="@drawable/button_shape"
             android:letterSpacing="0"
-            android:onClick="loginClick"
+            android:onClick="loginEmailClick"
             android:stateListAnimator="@null"
-            android:text="Login"
+            android:text="Login with email"
             android:textAlignment="gravity"
             android:textAllCaps="false"
             android:textColor="@color/buttonText"
@@ -115,10 +115,10 @@
             app:backgroundTint="@null"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/login_button" />
+            app:layout_constraintTop_toBottomOf="@+id/login_email_button" />
 
         <Button
-            android:id="@+id/login_email_button"
+            android:id="@+id/sign_up_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
@@ -126,9 +126,9 @@
             android:layout_marginRight="50dp"
             android:background="@drawable/button_shape"
             android:letterSpacing="0"
-            android:onClick="loginEmailClick"
+            android:onClick="signUpClick"
             android:stateListAnimator="@null"
-            android:text="Login with email"
+            android:text="Sign up"
             android:textAlignment="gravity"
             android:textAllCaps="false"
             android:textColor="@color/buttonText"

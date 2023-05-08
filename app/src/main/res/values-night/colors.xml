@@ -13,4 +13,6 @@
     <color name="buttonText">@color/gray_1</color>
     <color name="icon">@color/gray_1</color>
     <color name="transparent">#00000000</color>
+    <color name="calendarText">@color/gray_1</color>
+    <color name="snackbarText">@color/gray_1</color>
 </resources>
