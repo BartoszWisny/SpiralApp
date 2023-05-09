@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +18,7 @@ lateinit var userProfileAdapter: UserProfileAdapter
 class UserProfileFragment : Fragment() {
     private lateinit var userProfileListView: RecyclerView
     private lateinit var userProfileRefresh: SwipeRefreshLayout
+    private lateinit var userProfilePhoto: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +50,10 @@ class UserProfileFragment : Fragment() {
         }
         userProfileListView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
 
+        userProfilePhoto = view.findViewById(R.id.user_profile_photo)
+        userProfilePhoto.setImageResource(R.drawable.user_profile_image)
+//        Picasso.get().load(R.drawable.user_profile_image).resize(1000, 1000).centerCrop()
+//            .into(holder.userImage)
         val testData = arrayListOf<TestUserData>() // test data for RecyclerView
         testData.add(TestUserData())
 

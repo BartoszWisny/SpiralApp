@@ -11,9 +11,7 @@ class UserProfileAdapter(private val data: List<TestUserData>): RecyclerView.Ada
     // private var profilesData = arrayListOf<TestUserData>()
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var userImage: ImageView = view.findViewById(R.id.user_profile_image)
-        var userFirstName: TextView = view.findViewById(R.id.user_profile_first_name)
-        var userSurname: TextView = view.findViewById(R.id.user_profile_surname)
+        var userName: TextView = view.findViewById(R.id.user_profile_name)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -22,11 +20,7 @@ class UserProfileAdapter(private val data: List<TestUserData>): RecyclerView.Ada
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.userImage.setImageResource(R.drawable.user_profile_image)
-//        Picasso.get().load(R.drawable.user_profile_image).resize(1000, 1000).centerCrop()
-//            .into(holder.userImage)
-        holder.userFirstName.text = data[position].firstName
-        holder.userSurname.text = data[position].surname
+        holder.userName.text = data[position].name
     }
 
     override fun getItemCount(): Int {

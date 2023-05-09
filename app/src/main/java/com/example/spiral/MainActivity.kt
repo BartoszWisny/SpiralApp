@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchButton: Button
     private lateinit var settingsButton: Button
     private lateinit var searchCloseButton: Button
+    private lateinit var userImage: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -196,5 +197,21 @@ class MainActivity : AppCompatActivity() {
     fun qrCodeClick(view: View) {
         // TODO
         Toast.makeText(this, "QR Code click test", Toast.LENGTH_SHORT).show()
+    }
+
+    fun sendMessageClick(view: View) {
+
+    }
+
+    fun addToFriendsClick(view: View) {
+
+    }
+
+    fun editProfileDataClick(view: View) {
+
+    }
+
+    fun editProfilePhotoClick(view: View) {
+
     }
 }
