@@ -15,4 +15,5 @@
     <color name="transparent">#00000000</color>
     <color name="calendarText">@color/blue_3</color>
     <color name="snackbarText">@color/blue_3</color>
+    <color name="siBorderColor">@color/blue_3</color>
 </resources>

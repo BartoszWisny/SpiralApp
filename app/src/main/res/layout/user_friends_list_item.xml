@@ -24,7 +24,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:siBorderColor="@color/blue_3"
+            app:siBorderColor="@color/siBorderColor"
             app:siBorderWidth="1dp"
             app:siRadius="20dp"
             app:siSquare="true" />

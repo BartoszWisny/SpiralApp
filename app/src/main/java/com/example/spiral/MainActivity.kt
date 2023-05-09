@@ -8,10 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -194,5 +191,10 @@ class MainActivity : AppCompatActivity() {
         topMenuBarSearch.visibility = View.INVISIBLE
         searchCloseButton.visibility = View.INVISIBLE
         searchText.setText("")
+    }
+
+    fun qrCodeClick(view: View) {
+        // TODO
+        Toast.makeText(this, "QR Code click test", Toast.LENGTH_SHORT).show()
     }
 }
