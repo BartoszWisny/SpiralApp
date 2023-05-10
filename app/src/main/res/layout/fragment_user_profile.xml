@@ -23,7 +23,7 @@
                 android:id="@+id/user_profile_photo"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:src="@drawable/user_profile_image"
+                android:src="@drawable/default_user_profile_photo"
                 app:layout_constraintDimensionRatio="1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -23,7 +23,7 @@ class UserChatsAdapter(private val data: List<TestMessage>): RecyclerView.Adapte
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.userImage.setImageResource(R.drawable.user_profile_image)
+        holder.userImage.setImageResource(R.drawable.default_user_profile_photo)
 //        Picasso.get().load(R.drawable.spiral_logo).resize(1000, 1000).centerCrop()
 //            .transform(RoundedCornersTransformation(500, 20)).into(holder.userImage)
         holder.userName.text = chatsData[position].user

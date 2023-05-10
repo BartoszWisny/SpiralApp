@@ -51,7 +51,7 @@ class UserProfileFragment : Fragment() {
         userProfileListView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
 
         userProfilePhoto = view.findViewById(R.id.user_profile_photo)
-        userProfilePhoto.setImageResource(R.drawable.user_profile_image)
+        userProfilePhoto.setImageResource(R.drawable.default_user_profile_photo)
 //        Picasso.get().load(R.drawable.user_profile_image).resize(1000, 1000).centerCrop()
 //            .into(holder.userImage)
         val testData = arrayListOf<TestUserData>() // test data for RecyclerView
@@ -64,6 +64,11 @@ class UserProfileFragment : Fragment() {
             // userChatsListView.adapter!!.notifyDataSetChanged()
             userProfileRefresh.isRefreshing = false
         }
+
         return view
+    }
+
+    fun getProfiles() {
+
     }
 }

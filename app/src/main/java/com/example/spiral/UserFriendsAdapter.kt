@@ -28,7 +28,7 @@ class UserFriendsAdapter(private val data: List<TestFriendData>, private val num
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.userImage.setImageResource(R.drawable.user_profile_image)
+        holder.userImage.setImageResource(R.drawable.default_user_profile_photo)
 //        Picasso.get().load(R.drawable.user_profile_image).resize(1000, 1000).centerCrop()
 //            .transform(RoundedCornersTransformation(50, 0)).into(holder.userImage)
         holder.userName.text = friendsData[position].user
