@@ -43,13 +43,7 @@ class UserChatsFragment : Fragment() {
             }
         }
         userChatsListView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
-
-        val testData = arrayListOf<TestMessage>() // test data for RecyclerView
-        for (i in 1..10) {
-            testData.add(TestMessage(i))
-        }
-
-        userChatsAdapter = UserChatsAdapter(testData)
+        userChatsAdapter = UserChatsAdapter(requireContext(), chat.chatsData)
         userChatsListView.adapter = userChatsAdapter
         userChatsRefresh.setOnRefreshListener {
             // TODO

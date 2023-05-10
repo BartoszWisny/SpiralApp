@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 var chat = Chat()
 
@@ -30,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchButton: Button
     private lateinit var settingsButton: Button
     private lateinit var searchCloseButton: Button
+    private lateinit var authentication: FirebaseAuth
+    private lateinit var database: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +47,8 @@ class MainActivity : AppCompatActivity() {
         searchButton = findViewById(R.id.user_search_button)
         settingsButton = findViewById(R.id.user_settings_button)
         searchCloseButton = findViewById(R.id.user_search_close_button)
+        authentication = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance().reference
 
         when (applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
             Configuration.UI_MODE_NIGHT_YES -> {
@@ -115,6 +121,24 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(p0: Editable?) {}
+        })
+
+        database.child("users").addValueEventListener(object: ValueEventListener { // do the same on refresh
+            override fun onDataChange(snapshot: DataSnapshot) {
+                chat.chatsData.clear()
+
+                for (postSnapshot in snapshot.children) {
+                    val user = postSnapshot.getValue(User::class.java)
+
+                    if (authentication.currentUser?.uid != user?.userId) {
+                        chat.chatsData.add(user!!)
+                    }
+                }
+
+                userChatsAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
         })
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

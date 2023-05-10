@@ -45,10 +45,10 @@ class UserProfilesFragment : Fragment() {
             }
         }
         val numberOfColumns = when (requireActivity().applicationContext.resources?.configuration?.orientation) {
-            Configuration.ORIENTATION_PORTRAIT -> 3
-            Configuration.ORIENTATION_LANDSCAPE -> 6
-            Configuration.ORIENTATION_UNDEFINED -> 3
-            else -> 3
+            Configuration.ORIENTATION_PORTRAIT -> 2
+            Configuration.ORIENTATION_LANDSCAPE -> 4
+            Configuration.ORIENTATION_UNDEFINED -> 2
+            else -> 2
         }
         userProfilesListView.layoutManager = GridLayoutManager(requireActivity().applicationContext, numberOfColumns)
 

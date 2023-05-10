@@ -1,20 +1,29 @@
 package com.example.spiral
 
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.storage.FirebaseStorage
 
-class UserChatsAdapter(private val data: List<TestMessage>): RecyclerView.Adapter<UserChatsAdapter.ViewHolder>() {
+class UserChatsAdapter(private val context: Context, private val data: List<User>):
+    RecyclerView.Adapter<UserChatsAdapter.ViewHolder>() {
     private var chatsData = data
+    private var storage = FirebaseStorage.getInstance()
+    private lateinit var userPhotoBitmap: Bitmap
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-//        var userChatsListItemLayout: ConstraintLayout = view.findViewById(R.id.user_chats_list_item_layout)
-        var userImage: ImageView = view.findViewById(R.id.user_chats_image)
-        var userName: TextView = view.findViewById(R.id.user_chats_name)
+        var userPhoto: ImageView = view.findViewById(R.id.user_chats_photo)
+        var username: TextView = view.findViewById(R.id.user_chats_name)
         var userLastMessage: TextView = view.findViewById(R.id.user_chats_last_message)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -23,19 +32,23 @@ class UserChatsAdapter(private val data: List<TestMessage>): RecyclerView.Adapte
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.userImage.setImageResource(R.drawable.default_user_profile_photo)
+        val storageReference = storage.getReferenceFromUrl("gs://spiralapp-828a8.appspot.com")
+        val photoReference = storageReference.child("users").child(chatsData[position].userId)
+        photoReference.getBytes(10 * 1024 * 1024).addOnSuccessListener {
+            userPhotoBitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+            holder.userPhoto.setImageBitmap(userPhotoBitmap)
+        }.addOnFailureListener {}
 //        Picasso.get().load(R.drawable.spiral_logo).resize(1000, 1000).centerCrop()
 //            .transform(RoundedCornersTransformation(500, 20)).into(holder.userImage)
-        holder.userName.text = chatsData[position].user
-        holder.userLastMessage.text = chatsData[position].text
-
-//        if (position == 0) {
-//            holder.userChatsListItemLayout.updatePadding(0, 50, 0, 0)
-//        }
-//
-//        if (position == data.size - 1) {
-//            holder.userChatsListItemLayout.updatePadding(0, 0, 0, 50)
-//        }
+        val name = "${chatsData[position].firstName} ${chatsData[position].surname}"
+        holder.username.text = name
+        holder.userLastMessage.text = "test message"
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, ChatActivity::class.java)
+            intent.putExtra("userId", chatsData[position].userId)
+            intent.putExtra("username", name)
+            context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -43,10 +56,12 @@ class UserChatsAdapter(private val data: List<TestMessage>): RecyclerView.Adapte
     }
 
     fun filterChats(text: String) {
-        val filteredList = arrayListOf<TestMessage>()
+        val filteredList = arrayListOf<User>()
 
         for (item in data) {
-            if (item.user.lowercase().contains(text.lowercase())) {
+            val name = "${item.firstName} ${item.surname}"
+
+            if (name.lowercase().contains(text.lowercase())) {
                 filteredList.add(item)
             }
         }

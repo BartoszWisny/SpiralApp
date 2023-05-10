@@ -28,7 +28,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/user_chats_image"
+            app:layout_constraintStart_toEndOf="@+id/user_chats_photo"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -40,16 +40,17 @@
             android:layout_marginRight="10dp"
             android:layout_marginBottom="5dp"
             android:text="user_chats_last_message"
-            android:textSize="14sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/user_chats_image"
+            app:layout_constraintStart_toEndOf="@+id/user_chats_photo"
             app:layout_constraintTop_toBottomOf="@+id/user_chats_name" />
 
         <com.github.siyamed.shapeimageview.RoundedImageView
-            android:id="@+id/user_chats_image"
+            android:id="@+id/user_chats_photo"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:src="@drawable/default_user_profile_photo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1"
             app:layout_constraintStart_toStartOf="parent"
