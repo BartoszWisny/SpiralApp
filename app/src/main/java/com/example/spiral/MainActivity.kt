@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchButton: Button
     private lateinit var settingsButton: Button
     private lateinit var searchCloseButton: Button
-    private lateinit var userImage: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,9 +67,9 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.user_friends -> chat.viewPager?.currentItem = 0
+                R.id.user_profiles -> chat.viewPager?.currentItem = 0
                 R.id.user_chats -> chat.viewPager?.currentItem = 1
-                R.id.user_profile -> chat.viewPager?.currentItem = 2
+                R.id.user_profile_display -> chat.viewPager?.currentItem = 2
                 else -> chat.viewPager?.currentItem = 1
             }
 
@@ -80,23 +79,22 @@ class MainActivity : AppCompatActivity() {
         chat.viewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 bottomNavigationView.selectedItemId = when (position) {
-                    0 -> R.id.user_friends
+                    0 -> R.id.user_profiles
                     1 -> R.id.user_chats
-                    2 -> R.id.user_profile
+                    2 -> R.id.user_profile_display
                     else -> R.id.user_chats
                 }
 
                 title.text = when (position) {
-                    0 -> "Friends"
+                    0 -> "Profiles"
                     1 -> "Chats"
-                    2 -> "Profile"
+                    2 -> "Profile display"
                     else -> "Chats"
                 }
 
                 searchText.hint = when (position) {
-                    0 -> "Search friend by username"
+                    0 -> "Search profile by username"
                     1 -> "Search chat by username"
-                    2 -> "Search profile by username"
                     else -> "Search chat by username"
                 }
 
@@ -109,9 +107,9 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 when (chat.viewPager?.currentItem) {
-                    0 -> userFriendsAdapter.filterFriends(searchText.text.toString())
+                    0 -> userProfilesAdapter.filterFriends(searchText.text.toString())
                     1 -> userChatsAdapter.filterChats(searchText.text.toString())
-                    2 -> userProfileAdapter.filterProfiles(searchText.text.toString())
+                    2 -> userProfileDisplayAdapter.filterProfiles(searchText.text.toString())
                     else -> userChatsAdapter.filterChats(searchText.text.toString())
                 }
             }
@@ -154,13 +152,13 @@ class MainActivity : AppCompatActivity() {
         override fun createFragment(position: Int): Fragment {
             return when (position) {
                 0 -> {
-                    UserFriendsFragment()
+                    UserProfilesFragment()
                 }
                 1 -> {
                     UserChatsFragment()
                 }
                 2 -> {
-                    UserProfileFragment()
+                    UserProfileDisplayFragment()
                 }
                 else -> {
                     UserChatsFragment()
@@ -187,7 +185,13 @@ class MainActivity : AppCompatActivity() {
             getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(view?.windowToken, 0)
         topMenuBar.visibility = View.VISIBLE
-        searchButton.visibility = View.VISIBLE
+
+        if (chat.viewPager?.currentItem != 2) {
+            searchButton.visibility = View.VISIBLE
+        } else {
+            searchButton.visibility = View.INVISIBLE
+        }
+
         settingsButton.visibility = View.VISIBLE
         topMenuBarSearch.visibility = View.INVISIBLE
         searchCloseButton.visibility = View.INVISIBLE

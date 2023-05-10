@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/user_profile_list_item_layout"
+    android:id="@+id/user_profile_display_list_item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
@@ -10,12 +10,12 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/user_profile_list_item"
+        android:id="@+id/user_profile_display_list_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/user_profile_photo_layout"
+        app:layout_constraintStart_toEndOf="@+id/user_profile_display_photo_layout"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
@@ -44,7 +44,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <EditText
-                        android:id="@+id/user_profile_name"
+                        android:id="@+id/user_profile_display_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
@@ -71,7 +71,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
                     <EditText
-                        android:id="@+id/user_profile_date_of_birth"
+                        android:id="@+id/user_profile_display_date_of_birth"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
@@ -86,7 +86,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/user_profile_gender"
+                        android:id="@+id/user_profile_display_gender"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"

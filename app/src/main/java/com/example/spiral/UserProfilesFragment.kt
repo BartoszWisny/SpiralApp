@@ -11,36 +11,36 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
-lateinit var userFriendsAdapter: UserFriendsAdapter
+lateinit var userProfilesAdapter: UserProfilesAdapter
 
-class UserFriendsFragment : Fragment() {
-    private lateinit var userFriendsListView: RecyclerView
-    private lateinit var userFriendsRefresh: SwipeRefreshLayout
+class UserProfilesFragment : Fragment() {
+    private lateinit var userProfilesListView: RecyclerView
+    private lateinit var userProfilesRefresh: SwipeRefreshLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_user_friends, container, false)
-        userFriendsListView = view.findViewById(R.id.user_friends_list)
-        userFriendsRefresh = view.findViewById(R.id.user_friends_refresh)
+        val view = inflater.inflate(R.layout.fragment_user_profiles, container, false)
+        userProfilesListView = view.findViewById(R.id.user_profiles_list)
+        userProfilesRefresh = view.findViewById(R.id.user_profiles_refresh)
         when (requireActivity().applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
             Configuration.UI_MODE_NIGHT_YES -> {
-                userFriendsRefresh.setColorSchemeColors(ResourcesCompat.getColor(resources, R.color.gray_1,
+                userProfilesRefresh.setColorSchemeColors(ResourcesCompat.getColor(resources, R.color.gray_1,
                     requireActivity().applicationContext.theme))
-                userFriendsRefresh.setProgressBackgroundColorSchemeColor(ResourcesCompat.getColor(resources, R.color.gray_2,
+                userProfilesRefresh.setProgressBackgroundColorSchemeColor(ResourcesCompat.getColor(resources, R.color.gray_2,
                     requireActivity().applicationContext.theme))
             }
             Configuration.UI_MODE_NIGHT_NO -> {
-                userFriendsRefresh.setColorSchemeColors(ResourcesCompat.getColor(resources, R.color.blue_3,
+                userProfilesRefresh.setColorSchemeColors(ResourcesCompat.getColor(resources, R.color.blue_3,
                     requireActivity().applicationContext.theme))
-                userFriendsRefresh.setProgressBackgroundColorSchemeColor(ResourcesCompat.getColor(resources, R.color.blue_1,
+                userProfilesRefresh.setProgressBackgroundColorSchemeColor(ResourcesCompat.getColor(resources, R.color.blue_1,
                     requireActivity().applicationContext.theme))
             }
             Configuration.UI_MODE_NIGHT_UNDEFINED -> {
-                userFriendsRefresh.setColorSchemeColors(ResourcesCompat.getColor(resources, R.color.blue_3,
+                userProfilesRefresh.setColorSchemeColors(ResourcesCompat.getColor(resources, R.color.blue_3,
                     requireActivity().applicationContext.theme))
-                userFriendsRefresh.setProgressBackgroundColorSchemeColor(ResourcesCompat.getColor(resources, R.color.blue_1,
+                userProfilesRefresh.setProgressBackgroundColorSchemeColor(ResourcesCompat.getColor(resources, R.color.blue_1,
                     requireActivity().applicationContext.theme))
             }
         }
@@ -50,19 +50,18 @@ class UserFriendsFragment : Fragment() {
             Configuration.ORIENTATION_UNDEFINED -> 3
             else -> 3
         }
-        userFriendsListView.layoutManager = GridLayoutManager(requireActivity().applicationContext, numberOfColumns)
+        userProfilesListView.layoutManager = GridLayoutManager(requireActivity().applicationContext, numberOfColumns)
 
-        val testData = arrayListOf<TestFriendData>() // test data for RecyclerView
+        val testData = arrayListOf<TestProfileData>() // test data for RecyclerView
         for (i in 1..16) {
-            testData.add(TestFriendData(i))
+            testData.add(TestProfileData(i))
         }
 
-        userFriendsAdapter = UserFriendsAdapter(testData, numberOfColumns)
-        userFriendsListView.adapter = userFriendsAdapter
-        userFriendsRefresh.setOnRefreshListener {
+        userProfilesAdapter = UserProfilesAdapter(testData)
+        userProfilesListView.adapter = userProfilesAdapter
+        userProfilesRefresh.setOnRefreshListener {
             // TODO
-            // userChatsListView.adapter!!.notifyDataSetChanged()
-            userFriendsRefresh.isRefreshing = false
+            userProfilesRefresh.isRefreshing = false
         }
         return view
     }
