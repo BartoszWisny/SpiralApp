@@ -113,9 +113,8 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 when (chat.viewPager?.currentItem) {
-                    0 -> userProfilesAdapter.filterFriends(searchText.text.toString())
+                    0 -> userProfilesAdapter.filterProfiles(searchText.text.toString())
                     1 -> userChatsAdapter.filterChats(searchText.text.toString())
-                    2 -> userProfileDisplayAdapter.filterProfiles(searchText.text.toString())
                     else -> userChatsAdapter.filterChats(searchText.text.toString())
                 }
             }

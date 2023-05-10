@@ -23,8 +23,4 @@ class UserProfileDisplayAdapter(private val data: List<TestUserData>): RecyclerV
     override fun getItemCount(): Int {
         return data.size
     }
-
-    fun filterProfiles(text: String) {
-        // TODO
-    }
 }

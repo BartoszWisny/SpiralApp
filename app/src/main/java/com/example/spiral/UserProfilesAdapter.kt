@@ -32,7 +32,7 @@ class UserProfilesAdapter(private val data: List<TestProfileData>):
         return profilesData.size
     }
 
-    fun filterFriends(text: String) {
+    fun filterProfiles(text: String) {
         val filteredList = arrayListOf<TestProfileData>()
 
         for (item in data) {
