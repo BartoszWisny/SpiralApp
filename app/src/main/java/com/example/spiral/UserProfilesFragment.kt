@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,15 +53,16 @@ class UserProfilesFragment : Fragment() {
         }
         userProfilesListView.layoutManager = GridLayoutManager(requireActivity().applicationContext, numberOfColumns)
 
-        val testData = arrayListOf<TestProfileData>() // test data for RecyclerView
-        for (i in 1..16) {
-            testData.add(TestProfileData(i))
-        }
+//        val testData = arrayListOf<TestProfileData>() // test data for RecyclerView
+//        for (i in 1..16) {
+//            testData.add(TestProfileData(i))
+//        }
 
-        userProfilesAdapter = UserProfilesAdapter(testData)
+        userProfilesAdapter = UserProfilesAdapter(requireContext(), chat.chatsData)
         userProfilesListView.adapter = userProfilesAdapter
         userProfilesRefresh.setOnRefreshListener {
             // TODO
+            Toast.makeText(context, "odświeżam", Toast.LENGTH_SHORT).show()
             userProfilesRefresh.isRefreshing = false
         }
         return view
