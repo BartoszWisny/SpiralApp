@@ -92,12 +92,15 @@ class ChatActivity : AppCompatActivity() {
 
     fun chatSendMessageClick(view: View) {
         val messageText = messageTextView.text.toString()
-        val message = Message(authentication.currentUser?.uid, "text", messageText)
-        database.child("chats").child(senderRoom!!).child("messages").push().setValue(message)
-            .addOnSuccessListener {
-                database.child("chats").child(receiverRoom!!).child("messages").push().setValue(message)
-            }.addOnFailureListener {}
-        messageTextView.setText("")
+        if (messageText != "") {
+            val message = Message(authentication.currentUser?.uid, "text", messageText)
+            database.child("chats").child(senderRoom!!).child("messages").push().setValue(message)
+                .addOnSuccessListener {
+                    database.child("chats").child(receiverRoom!!).child("messages").push()
+                        .setValue(message)
+                }.addOnFailureListener {}
+            messageTextView.setText("")
+        }
     }
 
     fun chatAttachmentClick(view: View) {

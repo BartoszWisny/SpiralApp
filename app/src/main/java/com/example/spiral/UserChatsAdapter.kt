@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -37,9 +36,11 @@ class UserChatsAdapter(private val context: Context, private val data: List<User
         photoReference.getBytes(10 * 1024 * 1024).addOnSuccessListener {
             userPhotoBitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
             holder.userPhoto.setImageBitmap(userPhotoBitmap)
-        }.addOnFailureListener {}
-//        Picasso.get().load(R.drawable.spiral_logo).resize(1000, 1000).centerCrop()
-//            .transform(RoundedCornersTransformation(500, 20)).into(holder.userImage)
+        }.addOnFailureListener {
+            userPhotoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_user_profile_photo)
+            holder.userPhoto.setImageBitmap(userPhotoBitmap)
+        }
+
         val name = "${chatsData[position].firstName} ${chatsData[position].surname}"
         holder.username.text = name
         holder.userLastMessage.text = "test message"
