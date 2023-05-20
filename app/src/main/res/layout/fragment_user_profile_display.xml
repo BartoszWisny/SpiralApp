@@ -6,98 +6,103 @@
     android:layout_height="match_parent"
     tools:context=".UserProfileDisplayFragment">
 
-    <LinearLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/user_profile_display_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="20dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingTop="5dp"
+        android:paddingRight="20dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/user_profile_display_photo_layout"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.github.siyamed.shapeimageview.RoundedImageView
-                android:id="@+id/user_profile_display_photo"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:src="@drawable/default_user_profile_photo"
-                app:layout_constraintDimensionRatio="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:siBorderColor="@color/siBorderColor"
-                app:siBorderWidth="1dp"
-                app:siRadius="20dp"
-                app:siSquare="true" />
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="20dp"
+            android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@drawable/item_shape"
-                app:layout_constraintBottom_toBottomOf="@+id/user_profile_display_photo"
-                app:layout_constraintEnd_toEndOf="@+id/user_profile_display_photo">
+                android:id="@+id/user_profile_display_photo_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                <Button
-                    android:id="@+id/qr_code_button"
+                <com.github.siyamed.shapeimageview.RoundedImageView
+                    android:id="@+id/user_profile_display_photo"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/default_user_profile_photo"
+                    app:layout_constraintDimensionRatio="1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:siBorderColor="@color/siBorderColor"
+                    app:siBorderWidth="1dp"
+                    app:siRadius="20dp"
+                    app:siSquare="true" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:background="@color/transparent"
-                    android:insetLeft="8dp"
-                    android:insetTop="0dp"
-                    android:insetRight="0dp"
-                    android:insetBottom="0dp"
-                    android:onClick="qrCodeClick"
-                    android:padding="0dp"
-                    android:stateListAnimator="@null"
-                    android:translationZ="1dp"
-                    app:icon="@drawable/qr_code_icon"
-                    app:iconPadding="0dp"
-                    app:iconSize="44dp"
-                    app:iconTint="@color/icon"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:background="@drawable/item_shape"
+                    app:layout_constraintBottom_toBottomOf="@+id/user_profile_display_photo"
+                    app:layout_constraintEnd_toEndOf="@+id/user_profile_display_photo">
+
+                    <Button
+                        android:id="@+id/qr_code_button"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@color/transparent"
+                        android:insetLeft="8dp"
+                        android:insetTop="0dp"
+                        android:insetRight="0dp"
+                        android:insetBottom="0dp"
+                        android:onClick="qrCodeClick"
+                        android:padding="0dp"
+                        android:stateListAnimator="@null"
+                        android:translationZ="1dp"
+                        app:icon="@drawable/qr_code_icon"
+                        app:iconPadding="0dp"
+                        app:iconSize="44dp"
+                        app:iconTint="@color/icon"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!--            <com.github.siyamed.shapeimageview.mask.PorterShapeImageView-->
+                <!--                android:id="@+id/user_profile_image_stroke"-->
+                <!--                android:layout_width="match_parent"-->
+                <!--                android:layout_height="match_parent"-->
+                <!--                android:layout_marginTop="-22dp"-->
+                <!--                android:adjustViewBounds="true"-->
+                <!--                android:src="@drawable/wave_shape_light_mode"-->
+                <!--                app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                app:layout_constraintStart_toStartOf="parent"-->
+                <!--                app:layout_constraintTop_toTopOf="parent"-->
+                <!--                app:siShape="@drawable/wave_shape_light_mode"-->
+                <!--                app:siSquare="true" />-->
+
+                <!--            <com.github.siyamed.shapeimageview.mask.PorterShapeImageView-->
+                <!--                android:id="@+id/user_profile_image"-->
+                <!--                android:layout_width="match_parent"-->
+                <!--                android:layout_height="match_parent"-->
+                <!--                android:src="@drawable/user_profile_image"-->
+                <!--                app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                app:layout_constraintStart_toStartOf="parent"-->
+                <!--                app:layout_constraintTop_toTopOf="parent"-->
+                <!--                app:siShape="@drawable/wave_shape_light_mode"-->
+                <!--                app:siSquare="true" />-->
+
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!--            <com.github.siyamed.shapeimageview.mask.PorterShapeImageView-->
-            <!--                android:id="@+id/user_profile_image_stroke"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="match_parent"-->
-            <!--                android:layout_marginTop="-22dp"-->
-            <!--                android:adjustViewBounds="true"-->
-            <!--                android:src="@drawable/wave_shape_light_mode"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toTopOf="parent"-->
-            <!--                app:siShape="@drawable/wave_shape_light_mode"-->
-            <!--                app:siSquare="true" />-->
-
-            <!--            <com.github.siyamed.shapeimageview.mask.PorterShapeImageView-->
-            <!--                android:id="@+id/user_profile_image"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="match_parent"-->
-            <!--                android:src="@drawable/user_profile_image"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toTopOf="parent"-->
-            <!--                app:siShape="@drawable/wave_shape_light_mode"-->
-            <!--                app:siSquare="true" />-->
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/user_profile_display_refresh"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/user_profile_display_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
 
 </FrameLayout>

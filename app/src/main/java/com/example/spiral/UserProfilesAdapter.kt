@@ -46,7 +46,7 @@ class UserProfilesAdapter(private val context: Context, private val data: List<U
         holder.itemView.setOnClickListener {
             Toast.makeText(context, "${name}'s profile clicked", Toast.LENGTH_SHORT).show()
         }
-
+        holder.setIsRecyclable(false)
 //        holder.userImage.setImageResource(R.drawable.default_user_profile_photo)
 //        Picasso.get().load(R.drawable.user_profile_image).resize(1000, 1000).centerCrop()
 //            .transform(RoundedCornersTransformation(50, 0)).into(holder.userImage)

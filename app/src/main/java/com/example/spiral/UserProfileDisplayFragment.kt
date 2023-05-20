@@ -66,8 +66,4 @@ class UserProfileDisplayFragment : Fragment() {
 
         return view
     }
-
-    fun getProfiles() {
-
-    }
 }

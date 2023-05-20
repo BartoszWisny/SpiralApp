@@ -36,6 +36,8 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
             holder as MessageReceivedViewHolder
             holder.messageReceived.text = message.message
         }
+
+        holder.setIsRecyclable(false)
     }
 
     override fun getItemCount(): Int {

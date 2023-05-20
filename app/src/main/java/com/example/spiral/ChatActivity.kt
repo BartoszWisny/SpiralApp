@@ -65,11 +65,15 @@ class ChatActivity : AppCompatActivity() {
         photoReference.getBytes(10 * 1024 * 1024).addOnSuccessListener {
             userPhoto = BitmapFactory.decodeByteArray(it, 0, it.size)
             chatPhoto.setImageBitmap(userPhoto)
-        }.addOnFailureListener {}
+        }.addOnFailureListener {
+            userPhoto = BitmapFactory.decodeResource(resources, R.drawable.default_user_profile_photo)
+            chatPhoto.setImageBitmap(userPhoto)
+        }
         chatUsername.text = intent.getStringExtra("username")!!
         messageAdapter = MessageAdapter(this, messagesList)
         chatRecyclerView.layoutManager = LinearLayoutManager(this)
         chatRecyclerView.adapter = messageAdapter
+        chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
         senderRoom = authentication.currentUser?.uid + userId
         receiverRoom = userId + authentication.currentUser?.uid
 
@@ -83,15 +87,22 @@ class ChatActivity : AppCompatActivity() {
                         messagesList.add(message!!)
                     }
 
+                    chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
                     messageAdapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
             })
+
+        chatRecyclerView.addOnLayoutChangeListener {
+            _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
+                chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
+        }
     }
 
     fun chatSendMessageClick(view: View) {
         val messageText = messageTextView.text.toString()
+
         if (messageText != "") {
             val message = Message(authentication.currentUser?.uid, "text", messageText)
             database.child("chats").child(senderRoom!!).child("messages").push().setValue(message)

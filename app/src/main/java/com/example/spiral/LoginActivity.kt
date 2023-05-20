@@ -43,7 +43,6 @@ import java.net.URL
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-
 class LoginActivity : AppCompatActivity() {
     private lateinit var loginLayout: ConstraintLayout
     private lateinit var loginAppName: TextView
@@ -185,90 +184,90 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
 
-                if (task.isSuccessful) {
-                    val account: GoogleSignInAccount? = task.result
+            if (task.isSuccessful) {
+                val account: GoogleSignInAccount? = task.result
 
-                    if (account != null) {
-                        val firstName: String? = account.givenName
-                        val surname: String? = account.familyName
-                        var dateOfBirth: String? = null
-                        var gender: String? = null
-                        val email: String? = account.email
-                        val executor: ExecutorService = Executors.newSingleThreadExecutor()
+                if (account != null) {
+                    val firstName: String? = account.givenName
+                    val surname: String? = account.familyName
+                    var dateOfBirth: String? = null
+                    var gender: String? = null
+                    val email: String? = account.email
+                    val executor: ExecutorService = Executors.newSingleThreadExecutor()
 
-                        executor.execute {
-                            val photoUrl = URL(account.photoUrl.toString().dropLast(4).plus("1000-c"))
-                            val photo: Bitmap = BitmapFactory.decodeStream(photoUrl.openConnection().getInputStream())
-                            val scopes = arrayListOf<String>()
-                            scopes.add(Scopes.PROFILE)
-                            val accountCredential: GoogleAccountCredential = GoogleAccountCredential.usingOAuth2(this,
-                                scopes)
-                            accountCredential.selectedAccountName = email
-                            val service: PeopleService = PeopleService.Builder(httpTransport, gsonFactory, accountCredential)
-                                .setApplicationName(getString(R.string.app_name)).build()
-                            val profile: Person = service.people().get("people/me").setRequestMaskIncludeField("person.birthdays," +
+                    executor.execute {
+                        val photoUrl = URL(account.photoUrl.toString().dropLast(4).plus("1000-c"))
+                        val photo: Bitmap = BitmapFactory.decodeStream(photoUrl.openConnection().getInputStream())
+                        val scopes = arrayListOf<String>()
+                        scopes.add(Scopes.PROFILE)
+                        val accountCredential: GoogleAccountCredential = GoogleAccountCredential.usingOAuth2(this,
+                            scopes)
+                        accountCredential.selectedAccountName = email
+                        val service: PeopleService = PeopleService.Builder(httpTransport, gsonFactory, accountCredential)
+                            .setApplicationName(getString(R.string.app_name)).build()
+                        val profile: Person = service.people().get("people/me").setRequestMaskIncludeField("person.birthdays," +
                                 "person.genders").execute()
-                            val genders: List<Gender>? = profile.genders
+                        val genders: List<Gender>? = profile.genders
 
-                            if (genders != null && genders.isNotEmpty()) {
-                                gender = genders[0].value.replaceFirstChar(Char::titlecase)
-                            }
+                        if (genders != null && genders.isNotEmpty()) {
+                            gender = genders[0].value.replaceFirstChar(Char::titlecase)
+                        }
 
-                            val birthdays: List<Birthday>? = profile.birthdays
+                        val birthdays: List<Birthday>? = profile.birthdays
 
-                            if (birthdays != null && birthdays.isNotEmpty()) {
-                                val birthday: Birthday = birthdays[0]
+                        if (birthdays != null && birthdays.isNotEmpty()) {
+                            val birthday: Birthday = birthdays[0]
 
-                                if (birthday.date != null && birthday.date.year != null && birthday.date.month != null
-                                    && birthday.date.day != null) {
-                                    dateOfBirth = formattedDate(birthday.date.day, birthday.date.month, birthday.date.year)
-                                }
-                            }
-
-                            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                            authentication.signInWithCredential(credential).addOnCompleteListener {
-                                if (it.isSuccessful) {
-                                    database = FirebaseDatabase.getInstance().reference
-                                    val userId = authentication.currentUser?.uid!!
-                                    database.child("users").child(userId).setValue(User(userId, firstName, surname,
-                                        dateOfBirth, gender, email))
-                                    val storageReference = storage.getReferenceFromUrl("gs://spiralapp-828a8.appspot.com")
-                                    val photoReference = storageReference.child("users").child(userId)
-                                    val byteArrayOutputStream = ByteArrayOutputStream()
-                                    photo.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-                                    val data: ByteArray = byteArrayOutputStream.toByteArray()
-                                    photoReference.putBytes(data)
-                                    val intent = Intent(this, MainActivity::class.java)
-                                    startActivity(intent)
-                                } else {
-                                    val snackbar = Snackbar.make(googleViewHelper, "Error: Google login failed!",
-                                        Snackbar.LENGTH_SHORT)
-                                    val snackbarView = snackbar.view
-                                    snackbarView.setBackgroundResource(R.drawable.item_shape)
-                                    snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText,
-                                        application.theme))
-                                    val textView: TextView = snackbarView
-                                        .findViewById(com.google.android.material.R.id.snackbar_text)
-                                    textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                                    snackbar.show()
-                                }
+                            if (birthday.date != null && birthday.date.year != null && birthday.date.month != null
+                                && birthday.date.day != null) {
+                                dateOfBirth = formattedDate(birthday.date.day, birthday.date.month, birthday.date.year)
                             }
                         }
-                    } else {
-                        val snackbar = Snackbar.make(googleViewHelper, "Error: Google login failed!", Snackbar.LENGTH_SHORT)
-                        val snackbarView = snackbar.view
-                        snackbarView.setBackgroundResource(R.drawable.item_shape)
-                        snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
-                        val textView: TextView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text)
-                        textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                        snackbar.show()
+
+                        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                        authentication.signInWithCredential(credential).addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                database = FirebaseDatabase.getInstance().reference
+                                val userId = authentication.currentUser?.uid!!
+                                database.child("users").child(userId).setValue(User(userId, firstName, surname,
+                                    dateOfBirth, gender, email))
+                                val storageReference = storage.getReferenceFromUrl("gs://spiralapp-828a8.appspot.com")
+                                val photoReference = storageReference.child("users").child(userId)
+                                val byteArrayOutputStream = ByteArrayOutputStream()
+                                photo.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                                val data: ByteArray = byteArrayOutputStream.toByteArray()
+                                photoReference.putBytes(data)
+                                val intent = Intent(this, MainActivity::class.java)
+                                startActivity(intent)
+                            } else {
+                                val snackbar = Snackbar.make(googleViewHelper, "Error: Google login failed!",
+                                    Snackbar.LENGTH_SHORT)
+                                val snackbarView = snackbar.view
+                                snackbarView.setBackgroundResource(R.drawable.item_shape)
+                                snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText,
+                                    application.theme))
+                                val textView: TextView = snackbarView
+                                    .findViewById(com.google.android.material.R.id.snackbar_text)
+                                textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                                snackbar.show()
+                            }
+                        }
                     }
+                } else {
+                    val snackbar = Snackbar.make(googleViewHelper, "Error: Google login failed!", Snackbar.LENGTH_SHORT)
+                    val snackbarView = snackbar.view
+                    snackbarView.setBackgroundResource(R.drawable.item_shape)
+                    snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
+                    val textView: TextView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text)
+                    textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                    snackbar.show()
                 }
             }
+        }
     }
 
     fun signUpClick(view: View) {

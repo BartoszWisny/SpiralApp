@@ -10,6 +10,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 
 class UserChatsAdapter(private val context: Context, private val data: List<User>):
@@ -17,12 +22,13 @@ class UserChatsAdapter(private val context: Context, private val data: List<User
     private var chatsData = data
     private var storage = FirebaseStorage.getInstance()
     private lateinit var userPhotoBitmap: Bitmap
+    private var authentication = FirebaseAuth.getInstance()
+    private var database = FirebaseDatabase.getInstance().reference
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var userPhoto: ImageView = view.findViewById(R.id.user_chats_photo)
         var username: TextView = view.findViewById(R.id.user_chats_name)
         var userLastMessage: TextView = view.findViewById(R.id.user_chats_last_message)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,16 +46,31 @@ class UserChatsAdapter(private val context: Context, private val data: List<User
             userPhotoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_user_profile_photo)
             holder.userPhoto.setImageBitmap(userPhotoBitmap)
         }
-
         val name = "${chatsData[position].firstName} ${chatsData[position].surname}"
         holder.username.text = name
-        holder.userLastMessage.text = "test message"
+        val senderRoom = authentication.currentUser?.uid + chatsData[position].userId
+        database.child("chats").child(senderRoom).child("messages").addValueEventListener(
+            object: ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.value != null) {
+                        val message = snapshot.children.last().getValue(Message::class.java)
+                        val sender = if (message?.senderId == authentication.currentUser?.uid) "You: " else
+                            chatsData[position].firstName + ": "
+                        holder.userLastMessage.text = sender + message?.message
+                    } else {
+                        holder.userLastMessage.text = "Start a conversation"
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
         holder.itemView.setOnClickListener {
             val intent = Intent(context, ChatActivity::class.java)
             intent.putExtra("userId", chatsData[position].userId)
             intent.putExtra("username", name)
             context.startActivity(intent)
         }
+        holder.setIsRecyclable(false)
     }
 
     override fun getItemCount(): Int {
