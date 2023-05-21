@@ -52,7 +52,6 @@ class ChatActivity : AppCompatActivity() {
     private var bottomAttachmentBarVisibility = false
     private var bottomPhotoBarVisibility = false
     private lateinit var messageAdapter: MessageAdapter
-    private var messagesList = arrayListOf<Message>()
     private lateinit var authentication: FirebaseAuth
     private lateinit var database: DatabaseReference
     private var storage = FirebaseStorage.getInstance()
@@ -102,18 +101,43 @@ class ChatActivity : AppCompatActivity() {
         chatUsername.text = intent.getStringExtra("username")!!
         senderRoom = authentication.currentUser?.uid + userId
         receiverRoom = userId + authentication.currentUser?.uid
-        messageAdapter = MessageAdapter(this, messagesList, senderRoom!!)
+        messageAdapter = MessageAdapter(this, chat.messagesList, senderRoom!!)
         chatRecyclerView.layoutManager = LinearLayoutManager(this)
+        (chatRecyclerView.layoutManager as LinearLayoutManager).stackFromEnd = true
         chatRecyclerView.adapter = messageAdapter
         chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
+//        database.child("chats").child(senderRoom!!).child("messages").addChildEventListener(
+//            object: ChildEventListener {
+//                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+//                    val message = snapshot.getValue(Message::class.java)
+//                    chat.messagesList.add(message!!)
+//                    snapshot.key?.let { chat.messagesKeyList.add(it) }
+//                    chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
+//                    messageAdapter.notifyDataSetChanged()
+//                }
+//
+//                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+//
+//                override fun onChildRemoved(snapshot: DataSnapshot) {
+//                    val index = chat.messagesKeyList.indexOf(snapshot.key)
+//                    chat.messagesList.removeAt(index)
+//                    chat.messagesKeyList.removeAt(index)
+//                    chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
+//                    messageAdapter.notifyDataSetChanged()
+//                }
+//
+//                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+//
+//                override fun onCancelled(error: DatabaseError) {}
+//            })
         database.child("chats").child(senderRoom!!).child("messages").addValueEventListener(
             object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    messagesList.clear()
+                    chat.messagesList.clear()
 
                     for (postSnapshot in snapshot.children) {
                         val message = postSnapshot.getValue(Message::class.java)
-                        messagesList.add(message!!)
+                        chat.messagesList.add(message!!)
                     }
 
                     chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)

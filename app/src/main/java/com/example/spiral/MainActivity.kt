@@ -121,7 +121,32 @@ class MainActivity : AppCompatActivity() {
 
             override fun afterTextChanged(p0: Editable?) {}
         })
-
+//        database.child("users").addChildEventListener(
+//            object: ChildEventListener {
+//                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+//                    val user = snapshot.getValue(User::class.java)
+//
+//                    if (authentication.currentUser?.uid != user?.userId) {
+//                        chat.chatsData.add(user!!)
+//                        snapshot.key?.let { chat.chatsDataKeyList.add(it) }
+//                    }
+//
+//                    userChatsAdapter.notifyDataSetChanged()
+//                }
+//
+//                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+//
+//                override fun onChildRemoved(snapshot: DataSnapshot) {
+//                    val index = chat.chatsDataKeyList.indexOf(snapshot.key)
+//                    chat.chatsData.removeAt(index)
+//                    chat.chatsDataKeyList.removeAt(index)
+//                    userChatsAdapter.notifyDataSetChanged()
+//                }
+//
+//                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+//
+//                override fun onCancelled(error: DatabaseError) {}
+//        })
         database.child("users").addValueEventListener(object: ValueEventListener { // do the same on refresh
             override fun onDataChange(snapshot: DataSnapshot) {
                 chat.chatsData.clear()
@@ -139,7 +164,6 @@ class MainActivity : AppCompatActivity() {
 
             override fun onCancelled(error: DatabaseError) {}
         })
-
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val rootView: View = findViewById(android.R.id.content)
