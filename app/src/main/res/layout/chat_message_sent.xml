@@ -12,7 +12,6 @@
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:background="@drawable/item_shape"
-        android:onClick="userChatsItemClick"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">

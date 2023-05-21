@@ -127,7 +127,7 @@
         android:stateListAnimator="@null"
         android:translationZ="1dp"
         android:visibility="invisible"
-        app:icon="@drawable/user_search_close_icon"
+        app:icon="@drawable/close_icon"
         app:iconSize="32dp"
         app:iconTint="@color/icon"
         app:layout_constraintEnd_toEndOf="parent"

@@ -237,7 +237,7 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     fun dateOfBirthClick(view: View) {
-        var date = LocalDate.parse(dateOfBirthText.text, dateFormatter)
+        val date = LocalDate.parse(dateOfBirthText.text, dateFormatter)
         DatePickerDialog(this, datePickerDialogListener, date.year, date.month.value - 1, date.dayOfMonth).show()
     }
 }

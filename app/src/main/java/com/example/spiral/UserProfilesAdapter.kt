@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.storage.FirebaseStorage
+import com.squareup.picasso.Picasso
 
 class UserProfilesAdapter(private val context: Context, private val data: List<User>):
     RecyclerView.Adapter<UserProfilesAdapter.ViewHolder>() {
@@ -19,7 +20,7 @@ class UserProfilesAdapter(private val context: Context, private val data: List<U
     private lateinit var userPhotoBitmap: Bitmap
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var userImage: ImageView = view.findViewById(R.id.user_profiles_photo)
+        var userPhoto: ImageView = view.findViewById(R.id.user_profiles_photo)
         var username: TextView = view.findViewById(R.id.user_profiles_name)
     }
 
@@ -29,28 +30,19 @@ class UserProfilesAdapter(private val context: Context, private val data: List<U
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val storageReference = storage.getReferenceFromUrl("gs://spiralapp-828a8.appspot.com")
-        val photoReference =
-            storageReference.child("users").child(profilesData[position].userId)
-
-        photoReference.getBytes(10 * 1024 * 1024).addOnSuccessListener {
-            userPhotoBitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
-            holder.userImage.setImageBitmap(userPhotoBitmap)
+        val storageReference = storage.getReferenceFromUrl(chat.storageUrl)
+        val photoReference = storageReference.child("users").child(profilesData[position].userId)
+        photoReference.downloadUrl.addOnSuccessListener {
+            Picasso.get().load(it.toString()).placeholder(R.drawable.default_user_profile_photo).into(holder.userPhoto)
         }.addOnFailureListener {
             userPhotoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_user_profile_photo)
-            holder.userImage.setImageBitmap(userPhotoBitmap)
+            holder.userPhoto.setImageBitmap(userPhotoBitmap)
         }
-
         val name = "${profilesData[position].firstName} ${profilesData[position].surname}"
         holder.username.text = name
         holder.itemView.setOnClickListener {
             Toast.makeText(context, "${name}'s profile clicked", Toast.LENGTH_SHORT).show()
         }
-        holder.setIsRecyclable(false)
-//        holder.userImage.setImageResource(R.drawable.default_user_profile_photo)
-//        Picasso.get().load(R.drawable.user_profile_image).resize(1000, 1000).centerCrop()
-//            .transform(RoundedCornersTransformation(50, 0)).into(holder.userImage)
-//        holder.username.text = profilesData[position].user
     }
 
     override fun getItemCount(): Int {

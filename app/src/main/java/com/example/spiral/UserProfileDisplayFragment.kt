@@ -56,7 +56,6 @@ class UserProfileDisplayFragment : Fragment() {
 //            .into(holder.userImage)
         val testData = arrayListOf<TestUserData>() // test data for RecyclerView
         testData.add(TestUserData())
-
         userProfileDisplayAdapter = UserProfileDisplayAdapter(testData)
         userProfileDisplayListView.adapter = userProfileDisplayAdapter
         userProfileDisplayRefresh.setOnRefreshListener {

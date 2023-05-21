@@ -235,10 +235,10 @@ class LoginActivity : AppCompatActivity() {
                                 val userId = authentication.currentUser?.uid!!
                                 database.child("users").child(userId).setValue(User(userId, firstName, surname,
                                     dateOfBirth, gender, email))
-                                val storageReference = storage.getReferenceFromUrl("gs://spiralapp-828a8.appspot.com")
+                                val storageReference = storage.getReferenceFromUrl(chat.storageUrl)
                                 val photoReference = storageReference.child("users").child(userId)
                                 val byteArrayOutputStream = ByteArrayOutputStream()
-                                photo.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                                photo.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
                                 val data: ByteArray = byteArrayOutputStream.toByteArray()
                                 photoReference.putBytes(data)
                                 val intent = Intent(this, MainActivity::class.java)

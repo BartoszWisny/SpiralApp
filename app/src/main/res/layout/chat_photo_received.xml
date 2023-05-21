@@ -6,7 +6,7 @@
     android:layout_marginRight="50dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/chat_message_received_list_item"
+        android:id="@+id/chat_photo_received_list_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
@@ -16,17 +16,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/chat_message_received"
-            android:layout_width="0dp"
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/chat_photo_received"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="message_received"
-            android:textColor="@color/blue_1"
-            android:textSize="16sp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/default_photo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:siBorderColor="@color/siBorderColor"
+            app:siBorderWidth="1dp"
+            app:siRadius="20dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

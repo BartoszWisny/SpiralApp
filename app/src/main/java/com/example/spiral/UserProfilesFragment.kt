@@ -51,13 +51,9 @@ class UserProfilesFragment : Fragment() {
             Configuration.ORIENTATION_UNDEFINED -> 2
             else -> 2
         }
+        userProfilesListView.setHasFixedSize(true)
+        userProfilesListView.setItemViewCacheSize(20)
         userProfilesListView.layoutManager = GridLayoutManager(requireActivity().applicationContext, numberOfColumns)
-
-//        val testData = arrayListOf<TestProfileData>() // test data for RecyclerView
-//        for (i in 1..16) {
-//            testData.add(TestProfileData(i))
-//        }
-
         userProfilesAdapter = UserProfilesAdapter(requireContext(), chat.chatsData)
         userProfilesListView.adapter = userProfilesAdapter
         userProfilesRefresh.setOnRefreshListener {

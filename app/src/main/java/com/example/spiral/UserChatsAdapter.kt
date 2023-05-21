@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
+import com.squareup.picasso.Picasso
 
 class UserChatsAdapter(private val context: Context, private val data: List<User>):
     RecyclerView.Adapter<UserChatsAdapter.ViewHolder>() {
@@ -37,11 +38,10 @@ class UserChatsAdapter(private val context: Context, private val data: List<User
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val storageReference = storage.getReferenceFromUrl("gs://spiralapp-828a8.appspot.com")
+        val storageReference = storage.getReferenceFromUrl(chat.storageUrl)
         val photoReference = storageReference.child("users").child(chatsData[position].userId)
-        photoReference.getBytes(10 * 1024 * 1024).addOnSuccessListener {
-            userPhotoBitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
-            holder.userPhoto.setImageBitmap(userPhotoBitmap)
+        photoReference.downloadUrl.addOnSuccessListener {
+            Picasso.get().load(it.toString()).placeholder(R.drawable.default_user_profile_photo).into(holder.userPhoto)
         }.addOnFailureListener {
             userPhotoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_user_profile_photo)
             holder.userPhoto.setImageBitmap(userPhotoBitmap)
@@ -56,7 +56,7 @@ class UserChatsAdapter(private val context: Context, private val data: List<User
                         val message = snapshot.children.last().getValue(Message::class.java)
                         val sender = if (message?.senderId == authentication.currentUser?.uid) "You: " else
                             chatsData[position].firstName + ": "
-                        holder.userLastMessage.text = sender + message?.message
+                        holder.userLastMessage.text = sender + if (message?.type == "text") message.message else "photo sent"
                     } else {
                         holder.userLastMessage.text = "Start a conversation"
                     }
@@ -70,7 +70,6 @@ class UserChatsAdapter(private val context: Context, private val data: List<User
             intent.putExtra("username", name)
             context.startActivity(intent)
         }
-        holder.setIsRecyclable(false)
     }
 
     override fun getItemCount(): Int {
