@@ -192,6 +192,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     inner class TabAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+
+        var selectedProfile: String = ""
+
         override fun getItemCount(): Int {
             return 3
         }
@@ -265,4 +268,5 @@ class MainActivity : AppCompatActivity() {
     fun editProfilePhotoClick(view: View) {
 
     }
+
 }

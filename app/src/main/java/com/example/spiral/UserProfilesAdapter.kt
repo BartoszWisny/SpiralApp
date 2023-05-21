@@ -42,6 +42,8 @@ class UserProfilesAdapter(private val context: Context, private val data: List<U
         holder.username.text = name
         holder.itemView.setOnClickListener {
             Toast.makeText(context, "${name}'s profile clicked", Toast.LENGTH_SHORT).show()
+            chat.tabAdapter?.selectedProfile = profilesData[position].userId
+            chat.viewPager?.currentItem = 2
         }
     }
 

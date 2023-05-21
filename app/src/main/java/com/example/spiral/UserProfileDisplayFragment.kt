@@ -2,15 +2,17 @@ package com.example.spiral
 
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.firebase.storage.FirebaseStorage
+import com.squareup.picasso.Picasso
 
 lateinit var userProfileDisplayAdapter: UserProfileDisplayAdapter
 
@@ -18,6 +20,8 @@ class UserProfileDisplayFragment : Fragment() {
     private lateinit var userProfileDisplayListView: RecyclerView
     private lateinit var userProfileDisplayRefresh: SwipeRefreshLayout
     private lateinit var userProfileDisplayPhoto: ImageView
+    private var currentSelectedProfileId: String = ""
+    private var storage = FirebaseStorage.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,5 +68,22 @@ class UserProfileDisplayFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (chat.tabAdapter?.selectedProfile != "") {
+            // Changing details only when selected profile id has changed from last time
+            if (currentSelectedProfileId != chat.tabAdapter?.selectedProfile) {
+                currentSelectedProfileId = chat.tabAdapter?.selectedProfile.toString()
+                val storageReference = storage.getReferenceFromUrl(chat.storageUrl)
+                val photoReference = storageReference.child("users").child(currentSelectedProfileId)
+                photoReference.downloadUrl.addOnSuccessListener {
+                    Picasso.get().load(it.toString()).placeholder(R.drawable.default_user_profile_photo).into(userProfileDisplayPhoto)
+                }.addOnFailureListener {
+                    userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
+                }
+            }
+        }
     }
 }
