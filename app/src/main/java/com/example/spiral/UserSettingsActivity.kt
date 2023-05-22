@@ -52,6 +52,7 @@ class UserSettingsActivity : AppCompatActivity() {
     fun signOutClick(view: View) {
         Firebase.auth.signOut()
         googleSignInClient.signOut()
+        chat.usersList.clear()
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }

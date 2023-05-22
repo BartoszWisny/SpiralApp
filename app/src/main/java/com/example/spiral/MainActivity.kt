@@ -149,13 +149,13 @@ class MainActivity : AppCompatActivity() {
 //        })
         database.child("users").addValueEventListener(object: ValueEventListener { // do the same on refresh
             override fun onDataChange(snapshot: DataSnapshot) {
-                chat.chatsData.clear()
+                chat.usersList.clear()
 
                 for (postSnapshot in snapshot.children) {
                     val user = postSnapshot.getValue(User::class.java)
 
                     if (authentication.currentUser?.uid != user?.userId) {
-                        chat.chatsData.add(user!!)
+                        chat.usersList.add(user!!)
                     }
                 }
 

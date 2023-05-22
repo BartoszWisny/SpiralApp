@@ -9,6 +9,7 @@
         <item name="android:statusBarColor">@color/gray_2</item>
         <item name="android:navigationBarColor">@color/gray_2</item>
         <item name="android:textColor">@color/gray_1</item>
+        <item name="android:textColorLink">@color/gray_1</item>
         <item name="android:textColorHint">@color/gray_4</item>
         <item name="android:editTextColor">@color/gray_1</item>
         <item name="fontFamily">@font/lato</item>

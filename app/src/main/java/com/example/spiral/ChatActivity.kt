@@ -12,6 +12,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
 import android.provider.MediaStore
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -40,6 +42,7 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
 import java.util.concurrent.TimeUnit
+
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var chatLayout: ConstraintLayout
@@ -85,6 +88,8 @@ class ChatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
+        val policy = ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
         authentication = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
         chatLayout = findViewById(R.id.chat_layout)
@@ -178,10 +183,6 @@ class ChatActivity : AppCompatActivity() {
             })
         chatRecyclerView.setHasFixedSize(true)
         chatRecyclerView.setItemViewCacheSize(20)
-        chatRecyclerView.addOnLayoutChangeListener {
-            _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
-                chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
-        }
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             val windowMetrics = windowManager.currentWindowMetrics
@@ -216,7 +217,6 @@ class ChatActivity : AppCompatActivity() {
                     mediaRecorder.release()
                 }
 
-//                messageAdapter.stopMediaPlayer()
                 bottomMessageBar.visibility = View.VISIBLE
                 bottomAttachmentBar.visibility = View.INVISIBLE
                 bottomPhotoBar.visibility = View.INVISIBLE
@@ -271,7 +271,6 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-//        messageAdapter.stopMediaPlayer()
 
         if (recordAudio) {
             recordAudio = false
@@ -287,7 +286,6 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-//        messageAdapter.stopMediaPlayer()
 
         if (recordAudio) {
             recordAudio = false

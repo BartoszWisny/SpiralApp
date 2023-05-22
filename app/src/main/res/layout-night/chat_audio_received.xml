@@ -64,9 +64,8 @@
                     android:id="@+id/chat_audio_wave_view_received"
                     android:layout_width="100dp"
                     android:layout_height="36dp"
-                    android:clickable="false"
                     app:animateExpansion="false"
-                    app:chunkHeight="32dp"
+                    app:chunkHeight="20dp"
                     app:chunkRadius="1dp"
                     app:chunkSpacing="1dp"
                     app:chunkWidth="2dp"
@@ -75,6 +74,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:minChunkHeight="2dp"
+                    app:touchable="false"
                     app:waveColor="@color/gray_2" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
