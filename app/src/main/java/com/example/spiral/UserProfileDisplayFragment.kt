@@ -59,8 +59,6 @@ class UserProfileDisplayFragment : Fragment() {
         userProfileDisplayListView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
         userProfileDisplayPhoto = view.findViewById(R.id.user_profile_display_photo)
         userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
-//        Picasso.get().load(R.drawable.user_profile_image).resize(1000, 1000).centerCrop()
-//            .into(holder.userImage)
 
         val data = arrayListOf<User>()
 
@@ -79,25 +77,22 @@ class UserProfileDisplayFragment : Fragment() {
         val storageReference = storage.getReferenceFromUrl(chat.storageUrl)
 
         if (chat.tabAdapter?.selectedProfile != "") {
-            // Changing details only when selected profile id has changed from last time
-            if (currentSelectedProfileId != chat.tabAdapter!!.selectedProfile) {
-                currentSelectedProfileId = chat.tabAdapter!!.selectedProfile
-                val photoReference = storageReference.child("users").child(currentSelectedProfileId)
-                currentSelectedProfileId = chat.tabAdapter!!.selectedProfile
-                photoReference.downloadUrl.addOnSuccessListener {
-                    Picasso.get().load(it.toString()).placeholder(R.drawable.default_user_profile_photo).into(userProfileDisplayPhoto)
-                }.addOnFailureListener {
-                    userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
-                }
-                val data = arrayListOf<User>()
-                for (user in chat.usersList) {
-                    if (user.userId == currentSelectedProfileId) {
-                        data.add(user)
-                    }
-                }
-                userProfileDisplayAdapter = UserProfileDisplayAdapter(requireContext(), data)
-                userProfileDisplayListView.adapter = userProfileDisplayAdapter
+            currentSelectedProfileId = chat.tabAdapter!!.selectedProfile
+            val photoReference = storageReference.child("users").child(currentSelectedProfileId)
+            currentSelectedProfileId = chat.tabAdapter!!.selectedProfile
+            photoReference.downloadUrl.addOnSuccessListener {
+                Picasso.get().load(it.toString()).placeholder(R.drawable.default_user_profile_photo).into(userProfileDisplayPhoto)
+            }.addOnFailureListener {
+                userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
             }
+            val data = arrayListOf<User>()
+            for (user in chat.usersList) {
+                if (user.userId == currentSelectedProfileId) {
+                    data.add(user)
+                }
+            }
+            userProfileDisplayAdapter = UserProfileDisplayAdapter(requireContext(), data)
+            userProfileDisplayListView.adapter = userProfileDisplayAdapter
         } else {
             val userId = FirebaseAuth.getInstance().currentUser!!.uid
             val photoReference = storageReference.child("users").child(userId)
