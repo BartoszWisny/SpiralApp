@@ -112,4 +112,5 @@ class UserProfileDisplayFragment : Fragment() {
             userProfileDisplayListView.adapter = userProfileDisplayAdapter
         }
     }
+
 }

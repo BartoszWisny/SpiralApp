@@ -94,7 +94,10 @@ class MainActivity : AppCompatActivity() {
                 title.text = when (position) {
                     0 -> "Chats"
                     1 -> "Profiles"
-                    2 -> "Profile display"
+                    2 -> {
+                        if (chat.tabAdapter?.selectedProfile == "")  "Your profile"
+                        else "Profile display"
+                    }
                     else -> "Chats"
                 }
 
@@ -104,8 +107,12 @@ class MainActivity : AppCompatActivity() {
                     else -> "Search chat by username"
                 }
 
+                //when swiped from profile display - delete selected profile
+                if (position != 2) chat.tabAdapter?.selectedProfile = ""
+
                 searchCloseClick(window.decorView)
             }
+
         })
 
         searchText.addTextChangedListener(object: TextWatcher {
@@ -171,13 +178,20 @@ class MainActivity : AppCompatActivity() {
                 val rootView: View = findViewById(android.R.id.content)
                 searchCloseClick(rootView)
 
-                if (chat.viewPager?.currentItem == 0) {
-                    val intent = Intent(Intent.ACTION_MAIN)
-                    intent.addCategory(Intent.CATEGORY_HOME)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                } else {
-                    chat.viewPager?.currentItem = 0
+                when (chat.viewPager?.currentItem) {
+                    0 -> {
+                        val intent = Intent(Intent.ACTION_MAIN)
+                        intent.addCategory(Intent.CATEGORY_HOME)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                    }
+                    2 -> {
+                        chat.tabAdapter?.selectedProfile = ""
+                        chat.viewPager?.currentItem = 1
+                    }
+                    else -> {
+                        chat.viewPager?.currentItem = 0
+                    }
                 }
             }
         })
