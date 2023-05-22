@@ -11,4 +11,5 @@ class Chat {
     // var messagesKeyList = arrayListOf<String>()
     val storageUrl = "gs://spiralapp-828a8.appspot.com"
     // var play = false
+    lateinit var currentUser: User
 }

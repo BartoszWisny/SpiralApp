@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/user_profiles"
-        android:icon="@drawable/user_profiles_icon"
-        android:title="Profiles" />
-    <item
         android:id="@+id/user_chats"
         android:icon="@drawable/user_chats_icon"
         android:title="Chats" />
+    <item
+        android:id="@+id/user_profiles"
+        android:icon="@drawable/user_profiles_icon"
+        android:title="Profiles" />
     <item
         android:id="@+id/user_profile_display"
         android:icon="@drawable/user_profile_display_icon"

@@ -213,13 +213,13 @@ class LoginActivity : AppCompatActivity() {
                                 "person.genders").execute()
                         val genders: List<Gender>? = profile.genders
 
-                        if (genders != null && genders.isNotEmpty()) {
+                        if (!genders.isNullOrEmpty()) {
                             gender = genders[0].value.replaceFirstChar(Char::titlecase)
                         }
 
                         val birthdays: List<Birthday>? = profile.birthdays
 
-                        if (birthdays != null && birthdays.isNotEmpty()) {
+                        if (!birthdays.isNullOrEmpty()) {
                             val birthday: Birthday = birthdays[0]
 
                             if (birthday.date != null && birthday.date.year != null && birthday.date.month != null

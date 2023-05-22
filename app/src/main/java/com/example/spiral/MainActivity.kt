@@ -68,15 +68,15 @@ class MainActivity : AppCompatActivity() {
         chat.tabAdapter = TabAdapter(this)
         chat.viewPager = findViewById(R.id.main_pager)
         chat.viewPager?.adapter = chat.tabAdapter
-        chat.viewPager?.currentItem = 1
+        chat.viewPager?.currentItem = 0
         bottomNavigationView.selectedItemId = R.id.user_chats
 
         bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.user_profiles -> chat.viewPager?.currentItem = 0
-                R.id.user_chats -> chat.viewPager?.currentItem = 1
+                R.id.user_chats -> chat.viewPager?.currentItem = 0
+                R.id.user_profiles -> chat.viewPager?.currentItem = 1
                 R.id.user_profile_display -> chat.viewPager?.currentItem = 2
-                else -> chat.viewPager?.currentItem = 1
+                else -> chat.viewPager?.currentItem = 0
             }
 
             return@setOnItemSelectedListener true
@@ -85,27 +85,34 @@ class MainActivity : AppCompatActivity() {
         chat.viewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 bottomNavigationView.selectedItemId = when (position) {
-                    0 -> R.id.user_profiles
-                    1 -> R.id.user_chats
+                    0 -> R.id.user_chats
+                    1 -> R.id.user_profiles
                     2 -> R.id.user_profile_display
                     else -> R.id.user_chats
                 }
 
                 title.text = when (position) {
-                    0 -> "Profiles"
-                    1 -> "Chats"
-                    2 -> "Profile display"
+                    0 -> "Chats"
+                    1 -> "Profiles"
+                    2 -> {
+                        if (chat.tabAdapter?.selectedProfile == "")  "Your profile"
+                        else "Profile display"
+                    }
                     else -> "Chats"
                 }
 
                 searchText.hint = when (position) {
-                    0 -> "Search profile by username"
-                    1 -> "Search chat by username"
+                    0 -> "Search chat by username"
+                    1 -> "Search profile by username"
                     else -> "Search chat by username"
                 }
 
+                //when swiped from profile display - delete selected profile
+                if (position != 2) chat.tabAdapter?.selectedProfile = ""
+
                 searchCloseClick(window.decorView)
             }
+
         })
 
         searchText.addTextChangedListener(object: TextWatcher {
@@ -113,8 +120,8 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 when (chat.viewPager?.currentItem) {
-                    0 -> userProfilesAdapter.filterProfiles(searchText.text.toString())
-                    1 -> userChatsAdapter.filterChats(searchText.text.toString())
+                    0 -> userChatsAdapter.filterChats(searchText.text.toString())
+                    1 -> userProfilesAdapter.filterProfiles(searchText.text.toString())
                     else -> userChatsAdapter.filterChats(searchText.text.toString())
                 }
             }
@@ -156,6 +163,8 @@ class MainActivity : AppCompatActivity() {
 
                     if (authentication.currentUser?.uid != user?.userId) {
                         chat.usersList.add(user!!)
+                    } else {
+                        chat.currentUser = user!!
                     }
                 }
 
@@ -169,13 +178,20 @@ class MainActivity : AppCompatActivity() {
                 val rootView: View = findViewById(android.R.id.content)
                 searchCloseClick(rootView)
 
-                if (chat.viewPager?.currentItem == 1) {
-                    val intent = Intent(Intent.ACTION_MAIN)
-                    intent.addCategory(Intent.CATEGORY_HOME)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                } else {
-                    chat.viewPager?.currentItem = 1
+                when (chat.viewPager?.currentItem) {
+                    0 -> {
+                        val intent = Intent(Intent.ACTION_MAIN)
+                        intent.addCategory(Intent.CATEGORY_HOME)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                    }
+                    2 -> {
+                        chat.tabAdapter?.selectedProfile = ""
+                        chat.viewPager?.currentItem = 1
+                    }
+                    else -> {
+                        chat.viewPager?.currentItem = 0
+                    }
                 }
             }
         })
@@ -192,6 +208,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     inner class TabAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+
+        var selectedProfile: String = ""
+
         override fun getItemCount(): Int {
             return 3
         }
@@ -199,10 +218,10 @@ class MainActivity : AppCompatActivity() {
         override fun createFragment(position: Int): Fragment {
             return when (position) {
                 0 -> {
-                    UserProfilesFragment()
+                    UserChatsFragment()
                 }
                 1 -> {
-                    UserChatsFragment()
+                    UserProfilesFragment()
                 }
                 2 -> {
                     UserProfileDisplayFragment()

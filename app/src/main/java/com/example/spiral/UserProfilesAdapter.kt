@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
@@ -41,7 +40,8 @@ class UserProfilesAdapter(private val context: Context, private val data: List<U
         val name = "${profilesData[position].firstName} ${profilesData[position].surname}"
         holder.username.text = name
         holder.itemView.setOnClickListener {
-            Toast.makeText(context, "${name}'s profile clicked", Toast.LENGTH_SHORT).show()
+            chat.tabAdapter?.selectedProfile = profilesData[position].userId
+            chat.viewPager?.currentItem = 2
         }
     }
 
