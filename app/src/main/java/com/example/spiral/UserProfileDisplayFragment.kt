@@ -20,6 +20,7 @@ class UserProfileDisplayFragment : Fragment() {
     private lateinit var userProfileDisplayListView: RecyclerView
     private lateinit var userProfileDisplayRefresh: SwipeRefreshLayout
     private lateinit var userProfileDisplayPhoto: ImageView
+
     private var currentSelectedProfileId: String = ""
     private var storage = FirebaseStorage.getInstance()
 
@@ -58,15 +59,13 @@ class UserProfileDisplayFragment : Fragment() {
         userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
 //        Picasso.get().load(R.drawable.user_profile_image).resize(1000, 1000).centerCrop()
 //            .into(holder.userImage)
-        val testData = arrayListOf<TestUserData>() // test data for RecyclerView
-        testData.add(TestUserData())
-        userProfileDisplayAdapter = UserProfileDisplayAdapter(testData)
+        val data = arrayListOf<User>()
+        userProfileDisplayAdapter = UserProfileDisplayAdapter(requireContext(), data)
         userProfileDisplayListView.adapter = userProfileDisplayAdapter
         userProfileDisplayRefresh.setOnRefreshListener {
             // TODO
             userProfileDisplayRefresh.isRefreshing = false
         }
-
         return view
     }
 
@@ -83,6 +82,14 @@ class UserProfileDisplayFragment : Fragment() {
                 }.addOnFailureListener {
                     userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
                 }
+                val data = arrayListOf<User>()
+                for (user in chat.chatsData) {
+                    if (user.userId == currentSelectedProfileId) {
+                        data.add(user)
+                    }
+                }
+                userProfileDisplayAdapter = UserProfileDisplayAdapter(requireContext(), data)
+                userProfileDisplayListView.adapter = userProfileDisplayAdapter
             }
         }
     }
