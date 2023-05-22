@@ -45,7 +45,7 @@ class UserChatsFragment : Fragment() {
         userChatsListView.setHasFixedSize(true)
         userChatsListView.setItemViewCacheSize(20)
         userChatsListView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
-        userChatsAdapter = UserChatsAdapter(requireContext(), chat.chatsData)
+        userChatsAdapter = UserChatsAdapter(requireContext(), chat.usersList)
         userChatsListView.adapter = userChatsAdapter
         userChatsRefresh.setOnRefreshListener {
             // TODO

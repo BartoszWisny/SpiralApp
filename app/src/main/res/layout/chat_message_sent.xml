@@ -20,6 +20,7 @@
             android:id="@+id/chat_message_sent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:autoLink="web|phone|email"
             android:padding="10dp"
             android:text="message_sent"
             android:textSize="16sp"

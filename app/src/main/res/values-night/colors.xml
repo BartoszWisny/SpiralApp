@@ -16,4 +16,6 @@
     <color name="calendarText">@color/gray_1</color>
     <color name="snackbarText">@color/gray_1</color>
     <color name="siBorderColor">@color/gray_1</color>
+    <color name="chunkColor">@color/gray_1</color>
+    <color name="waveColor">@color/gray_1</color>
 </resources>

@@ -1,18 +1,33 @@
 package com.example.spiral
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaPlayer
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import rm.com.audiowave.AudioWaveView
+import java.io.File
+import java.net.URI
+import java.net.URL
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MessageAdapter(private val context: Context, private val data: List<Message>, private val senderRoom: String):
     RecyclerView.Adapter<ViewHolder>() {
@@ -23,7 +38,10 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
     private val messageReceived = 2
     private val photoSent = 3
     private val photoReceived = 4
+    private val audioSent = 5
+    private val audioReceived = 6
     private lateinit var photoBitmap: Bitmap
+    private var play = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
@@ -43,6 +61,14 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                 val view = LayoutInflater.from(context).inflate(R.layout.chat_photo_received, parent, false)
                 PhotoReceivedViewHolder(view)
             }
+            audioSent -> {
+                val view = LayoutInflater.from(context).inflate(R.layout.chat_audio_sent, parent, false)
+                AudioSentViewHolder(view)
+            }
+            audioReceived -> {
+                val view = LayoutInflater.from(context).inflate(R.layout.chat_audio_received, parent, false)
+                AudioReceivedViewHolder(view)
+            }
             else -> {
                 val view = LayoutInflater.from(context).inflate(R.layout.chat_message_sent, parent, false)
                 MessageSentViewHolder(view)
@@ -57,11 +83,13 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
             MessageSentViewHolder::class.java -> {
                 holder as MessageSentViewHolder
                 holder.messageSent.text = message.message
+                holder.messageSent.movementMethod = LinkMovementMethod.getInstance()
                 holder.setIsRecyclable(false)
             }
             MessageReceivedViewHolder::class.java -> {
                 holder as MessageReceivedViewHolder
                 holder.messageReceived.text = message.message
+                holder.messageReceived.movementMethod = LinkMovementMethod.getInstance()
                 holder.setIsRecyclable(false)
             }
             PhotoSentViewHolder::class.java -> {
@@ -75,6 +103,13 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                     photoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_photo)
                     holder.photoSent.setImageBitmap(photoBitmap)
                 }
+                holder.itemView.setOnClickListener {
+                    val intent = Intent(context, PhotoShowActivity::class.java)
+                    intent.putExtra("photoType", "chat")
+                    intent.putExtra("senderRoom", senderRoom)
+                    intent.putExtra("photoId", photoId)
+                    context.startActivity(intent)
+                }
             }
             PhotoReceivedViewHolder::class.java -> {
                 holder as PhotoReceivedViewHolder
@@ -87,6 +122,145 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                     photoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_photo)
                     holder.photoReceived.setImageBitmap(photoBitmap)
                 }
+            }
+            AudioSentViewHolder::class.java -> {
+                holder as AudioSentViewHolder
+                val audioId = message.message
+                val audioReference = storageReference.child("chats").child(senderRoom).child("audios")
+                    .child(audioId)
+                var mediaPlayer = MediaPlayer()
+                var audioPath: String? = null
+                audioReference.downloadUrl.addOnSuccessListener {
+                    audioPath = it.toString()
+                    mediaPlayer.setDataSource(audioPath)
+                    mediaPlayer.prepare()
+                }.addOnFailureListener {}
+                audioReference.getBytes(5 * 1024 * 1024).addOnSuccessListener {
+                    holder.audioWaveViewSent.setRawData(it)
+                }
+                var audioMinutes: Long
+                var audioSeconds: Long
+                mediaPlayer.setOnPreparedListener {
+                    holder.playPauseAudioSentButton.isEnabled = true
+                    audioMinutes = TimeUnit.MILLISECONDS.toMinutes(mediaPlayer.duration.toLong())
+                    audioSeconds = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.duration.toLong()) % 60L
+                    holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                }
+                holder.playPauseAudioSentButton.setOnClickListener {
+                    play = !play
+                    (holder.playPauseAudioSentButton as MaterialButton).icon = ResourcesCompat.getDrawable(context.resources,
+                        if (play) R.drawable.pause_icon else R.drawable.play_icon, context.theme)
+
+                    if (play) {
+                        val currentOrientation = context.resources.configuration.orientation
+                        (context as Activity).requestedOrientation = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+                            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                        } else {
+                            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        }
+                        mediaPlayer.start()
+                        mediaPlayer.setOnCompletionListener {
+                            play = false
+                            audioMinutes = TimeUnit.MILLISECONDS.toMinutes(mediaPlayer.duration.toLong())
+                            audioSeconds = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.duration.toLong()) % 60L
+                            holder.playPauseAudioSentButton.icon = ResourcesCompat.getDrawable(context.resources,
+                                R.drawable.play_icon, context.theme)
+                            holder.audioWaveViewSent.progress = 0F
+                            holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                            mediaPlayer.stop()
+                            mediaPlayer.release()
+                            mediaPlayer = MediaPlayer()
+                            mediaPlayer.setDataSource(audioPath)
+                            mediaPlayer.prepare()
+                        }
+                    } else {
+                        mediaPlayer.pause()
+                        (context as Activity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                    }
+                }
+                val timer = Timer()
+                timer.scheduleAtFixedRate(object : TimerTask() {
+                    override fun run() {
+                        if (play) {
+                            holder.audioWaveViewSent.progress = (100 * mediaPlayer.currentPosition / mediaPlayer.duration)
+                                .toFloat()
+                            audioMinutes = TimeUnit.MILLISECONDS.toMinutes((mediaPlayer.duration - mediaPlayer.currentPosition)
+                                .toLong())
+                            audioSeconds = TimeUnit.MILLISECONDS.toSeconds((mediaPlayer.duration - mediaPlayer.currentPosition)
+                                .toLong()) % 60L
+                            (context as Activity).runOnUiThread {
+                                holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                            }
+                        }
+                    }
+                }, 0, 50)
+                holder.setIsRecyclable(false)
+            }
+            AudioReceivedViewHolder::class.java -> {
+                holder as AudioReceivedViewHolder
+                val audioId = message.message
+                val audioReference = storageReference.child("chats").child(senderRoom).child("audios")
+                    .child(audioId)
+                var mediaPlayer = MediaPlayer()
+                var audioPath: String? = null
+                audioReference.downloadUrl.addOnSuccessListener {
+                    audioPath = it.toString()
+                    mediaPlayer.setDataSource(audioPath)
+                    mediaPlayer.prepare()
+                }.addOnFailureListener {}
+                audioReference.getBytes(5 * 1024 * 1024).addOnSuccessListener {
+                    holder.audioWaveViewReceived.setRawData(it)
+                }
+                var audioMinutes: Long
+                var audioSeconds: Long
+                mediaPlayer.setOnPreparedListener {
+                    holder.playPauseAudioReceivedButton.isEnabled = true
+                    audioMinutes = TimeUnit.MILLISECONDS.toMinutes(mediaPlayer.duration.toLong())
+                    audioSeconds = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.duration.toLong()) % 60L
+                    holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                }
+                holder.playPauseAudioReceivedButton.setOnClickListener {
+                    play = !play
+                    (holder.playPauseAudioReceivedButton as MaterialButton).icon = ResourcesCompat.getDrawable(context.resources,
+                        if (play) R.drawable.pause_icon else R.drawable.play_icon, context.theme)
+
+                    if (play) {
+                        mediaPlayer.start()
+                        mediaPlayer.setOnCompletionListener {
+                            play = false
+                            audioMinutes = TimeUnit.MILLISECONDS.toMinutes(mediaPlayer.duration.toLong())
+                            audioSeconds = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.duration.toLong()) % 60L
+                            holder.playPauseAudioReceivedButton.icon = ResourcesCompat.getDrawable(context.resources,
+                                R.drawable.play_icon, context.theme)
+                            holder.audioWaveViewReceived.progress = 0F
+                            holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                            mediaPlayer.stop()
+                            mediaPlayer.release()
+                            mediaPlayer = MediaPlayer()
+                            mediaPlayer.setDataSource(audioPath)
+                            mediaPlayer.prepare()
+                        }
+                    } else {
+                        mediaPlayer.pause()
+                    }
+                }
+                val timer = Timer()
+                timer.scheduleAtFixedRate(object : TimerTask() {
+                    override fun run() {
+                        if (play) {
+                            holder.audioWaveViewReceived.progress = (100 * mediaPlayer.currentPosition / mediaPlayer.duration)
+                                .toFloat()
+                            audioMinutes = TimeUnit.MILLISECONDS.toMinutes((mediaPlayer.duration - mediaPlayer.currentPosition)
+                                .toLong())
+                            audioSeconds = TimeUnit.MILLISECONDS.toSeconds((mediaPlayer.duration - mediaPlayer.currentPosition)
+                                .toLong()) % 60L
+                            (context as Activity).runOnUiThread {
+                                holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                            }
+                        }
+                    }
+                }, 0, 50)
+                holder.setIsRecyclable(false)
             }
             else -> {
                 holder as MessageSentViewHolder
@@ -107,6 +281,8 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
             if (authentication.currentUser?.uid == message.senderId) messageSent else messageReceived
         } else if (message.type == "photo") {
             if (authentication.currentUser?.uid == message.senderId) photoSent else photoReceived
+        } else if (message.type == "audio") {
+            if (authentication.currentUser?.uid == message.senderId) audioSent else audioReceived
         } else {
             0
         }
@@ -126,5 +302,17 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
 
     class PhotoReceivedViewHolder(itemView: View) : ViewHolder(itemView) {
         val photoReceived: ImageView = itemView.findViewById(R.id.chat_photo_received)
+    }
+
+    class AudioSentViewHolder(itemView: View) : ViewHolder(itemView) {
+        val playPauseAudioSentButton: Button = itemView.findViewById(R.id.chat_play_pause_audio_sent_button)
+        val audioWaveViewSent: AudioWaveView = itemView.findViewById(R.id.chat_audio_wave_view_sent)
+        val audioSentTime: TextView = itemView.findViewById(R.id.chat_audio_sent_time)
+    }
+
+    class AudioReceivedViewHolder(itemView: View) : ViewHolder(itemView) {
+        val playPauseAudioReceivedButton: Button = itemView.findViewById(R.id.chat_play_pause_audio_received_button)
+        val audioWaveViewReceived: AudioWaveView = itemView.findViewById(R.id.chat_audio_wave_view_received)
+        val audioReceivedTime: TextView = itemView.findViewById(R.id.chat_audio_received_time)
     }
 }

@@ -54,7 +54,7 @@ class UserProfilesFragment : Fragment() {
         userProfilesListView.setHasFixedSize(true)
         userProfilesListView.setItemViewCacheSize(20)
         userProfilesListView.layoutManager = GridLayoutManager(requireActivity().applicationContext, numberOfColumns)
-        userProfilesAdapter = UserProfilesAdapter(requireContext(), chat.chatsData)
+        userProfilesAdapter = UserProfilesAdapter(requireContext(), chat.usersList)
         userProfilesListView.adapter = userProfilesAdapter
         userProfilesRefresh.setOnRefreshListener {
             // TODO
