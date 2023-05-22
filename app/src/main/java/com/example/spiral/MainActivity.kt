@@ -110,7 +110,16 @@ class MainActivity : AppCompatActivity() {
                 //when swiped from profile display - delete selected profile
                 if (position != 2) chat.tabAdapter?.selectedProfile = ""
 
-                searchCloseClick(window.decorView)
+                // searchCloseClick(window.decorView)
+                if (chat.viewPager?.currentItem != 2) {
+                    searchButton.visibility = View.VISIBLE
+                } else {
+                    searchButton.visibility = View.INVISIBLE
+                }
+
+                settingsButton.visibility = View.VISIBLE
+                topMenuBarSearch.visibility = View.INVISIBLE
+                searchCloseButton.visibility = View.INVISIBLE
             }
 
         })
