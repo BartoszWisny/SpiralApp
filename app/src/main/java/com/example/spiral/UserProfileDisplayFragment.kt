@@ -90,7 +90,7 @@ class UserProfileDisplayFragment : Fragment() {
                     userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
                 }
                 val data = arrayListOf<User>()
-                for (user in chat.chatsData) {
+                for (user in chat.usersList) {
                     if (user.userId == currentSelectedProfileId) {
                         data.add(user)
                     }
