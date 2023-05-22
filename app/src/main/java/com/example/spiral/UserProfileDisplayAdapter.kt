@@ -48,11 +48,11 @@ class UserProfileDisplayAdapter(private val context: Context, private val data: 
         if (data[position].userId == FirebaseAuth.getInstance().currentUser?.uid) {
             holder.editProfilePhotoButton.visibility = View.VISIBLE
             holder.editProfileDataButton.visibility = View.VISIBLE
-            holder.sendMessageButton.visibility = View.INVISIBLE
-            holder.addToFriendsButton.visibility = View.INVISIBLE
+            holder.sendMessageButton.visibility = View.GONE
+            holder.addToFriendsButton.visibility = View.GONE
         } else {
-            holder.editProfilePhotoButton.visibility = View.INVISIBLE
-            holder.editProfileDataButton.visibility = View.INVISIBLE
+            holder.editProfilePhotoButton.visibility = View.GONE
+            holder.editProfileDataButton.visibility = View.GONE
             holder.sendMessageButton.visibility = View.VISIBLE
             holder.addToFriendsButton.visibility = View.VISIBLE
         }

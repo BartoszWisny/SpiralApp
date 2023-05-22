@@ -156,6 +156,8 @@ class MainActivity : AppCompatActivity() {
 
                     if (authentication.currentUser?.uid != user?.userId) {
                         chat.chatsData.add(user!!)
+                    } else {
+                        chat.currentUser = user!!
                     }
                 }
 
@@ -268,5 +270,4 @@ class MainActivity : AppCompatActivity() {
     fun editProfilePhotoClick(view: View) {
 
     }
-
 }
