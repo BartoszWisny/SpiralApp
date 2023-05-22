@@ -108,4 +108,14 @@ class UserProfileDisplayFragment : Fragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("selectedProfile", chat.tabAdapter?.selectedProfile)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        chat.tabAdapter?.selectedProfile = savedInstanceState?.getString("selectedProfile").toString()
+        super.onViewStateRestored(savedInstanceState)
+    }
+
 }
