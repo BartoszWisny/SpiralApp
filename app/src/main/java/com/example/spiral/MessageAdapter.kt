@@ -1,18 +1,24 @@
 package com.example.spiral
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaPlayer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import rm.com.audiowave.AudioWaveView
 
 class MessageAdapter(private val context: Context, private val data: List<Message>, private val senderRoom: String):
     RecyclerView.Adapter<ViewHolder>() {
@@ -23,7 +29,10 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
     private val messageReceived = 2
     private val photoSent = 3
     private val photoReceived = 4
+    private val audioSent = 5
+    private val audioReceived = 6
     private lateinit var photoBitmap: Bitmap
+    private var play = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
@@ -42,6 +51,14 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
             photoReceived -> {
                 val view = LayoutInflater.from(context).inflate(R.layout.chat_photo_received, parent, false)
                 PhotoReceivedViewHolder(view)
+            }
+            audioSent -> {
+                val view = LayoutInflater.from(context).inflate(R.layout.chat_audio_sent, parent, false)
+                AudioSentViewHolder(view)
+            }
+            audioReceived -> {
+                val view = LayoutInflater.from(context).inflate(R.layout.chat_audio_received, parent, false)
+                AudioReceivedViewHolder(view)
             }
             else -> {
                 val view = LayoutInflater.from(context).inflate(R.layout.chat_message_sent, parent, false)
@@ -75,6 +92,13 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                     photoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_photo)
                     holder.photoSent.setImageBitmap(photoBitmap)
                 }
+                holder.itemView.setOnClickListener {
+                    val intent = Intent(context, PhotoShowActivity::class.java)
+                    intent.putExtra("photoType", "chat")
+                    intent.putExtra("senderRoom", senderRoom)
+                    intent.putExtra("photoId", photoId)
+                    context.startActivity(intent)
+                }
             }
             PhotoReceivedViewHolder::class.java -> {
                 holder as PhotoReceivedViewHolder
@@ -86,6 +110,80 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                 }.addOnFailureListener {
                     photoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_photo)
                     holder.photoReceived.setImageBitmap(photoBitmap)
+                }
+            }
+            AudioSentViewHolder::class.java -> {
+                holder as AudioSentViewHolder
+                val audioId = message.message
+                val audioReference = storageReference.child("chats").child(senderRoom).child("audios")
+                    .child(audioId)
+                var mediaPlayer = MediaPlayer()
+                var audioPath: String? = null
+                audioReference.downloadUrl.addOnSuccessListener {
+                    audioPath = it.toString()
+                    mediaPlayer.setDataSource(audioPath)
+                    mediaPlayer.prepare()
+                }.addOnFailureListener {}
+                mediaPlayer.setOnPreparedListener {
+                    holder.playPauseAudioSentButton.isEnabled = true
+                }
+                holder.playPauseAudioSentButton.setOnClickListener {
+                    play = !play
+                    (holder.playPauseAudioSentButton as MaterialButton).icon = ResourcesCompat.getDrawable(context.resources,
+                        if (play) R.drawable.pause_icon else R.drawable.play_icon, context.theme)
+
+                    if (play) {
+                        mediaPlayer.start()
+                        mediaPlayer.setOnCompletionListener {
+                            play = false
+                            holder.playPauseAudioSentButton.icon = ResourcesCompat.getDrawable(context.resources,
+                                R.drawable.play_icon, context.theme)
+                            mediaPlayer.stop()
+                            mediaPlayer.release()
+                            mediaPlayer = MediaPlayer()
+                            mediaPlayer.setDataSource(audioPath)
+                            mediaPlayer.prepare()
+                        }
+                    } else {
+                        mediaPlayer.pause()
+                    }
+                }
+            }
+            AudioReceivedViewHolder::class.java -> {
+                holder as AudioReceivedViewHolder
+                val audioId = message.message
+                val audioReference = storageReference.child("chats").child(senderRoom).child("audios")
+                    .child(audioId)
+                var mediaPlayer = MediaPlayer()
+                var audioPath: String? = null
+                audioReference.downloadUrl.addOnSuccessListener {
+                    audioPath = it.toString()
+                    mediaPlayer.setDataSource(audioPath)
+                    mediaPlayer.prepare()
+                }.addOnFailureListener {}
+                mediaPlayer.setOnPreparedListener {
+                    holder.playPauseAudioReceivedButton.isEnabled = true
+                }
+                holder.playPauseAudioReceivedButton.setOnClickListener {
+                    play = !play
+                    (holder.playPauseAudioReceivedButton as MaterialButton).icon = ResourcesCompat.getDrawable(context.resources,
+                        if (play) R.drawable.pause_icon else R.drawable.play_icon, context.theme)
+
+                    if (play) {
+                        mediaPlayer.start()
+                        mediaPlayer.setOnCompletionListener {
+                            play = false
+                            holder.playPauseAudioReceivedButton.icon = ResourcesCompat.getDrawable(context.resources,
+                                R.drawable.play_icon, context.theme)
+                            mediaPlayer.stop()
+                            mediaPlayer.release()
+                            mediaPlayer = MediaPlayer()
+                            mediaPlayer.setDataSource(audioPath)
+                            mediaPlayer.prepare()
+                        }
+                    } else {
+                        mediaPlayer.pause()
+                    }
                 }
             }
             else -> {
@@ -107,6 +205,8 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
             if (authentication.currentUser?.uid == message.senderId) messageSent else messageReceived
         } else if (message.type == "photo") {
             if (authentication.currentUser?.uid == message.senderId) photoSent else photoReceived
+        } else if (message.type == "audio") {
+            if (authentication.currentUser?.uid == message.senderId) audioSent else audioReceived
         } else {
             0
         }
@@ -127,4 +227,24 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
     class PhotoReceivedViewHolder(itemView: View) : ViewHolder(itemView) {
         val photoReceived: ImageView = itemView.findViewById(R.id.chat_photo_received)
     }
+
+    class AudioSentViewHolder(itemView: View) : ViewHolder(itemView) {
+        val playPauseAudioSentButton: Button = itemView.findViewById(R.id.chat_play_pause_audio_sent_button)
+        val audioWaveViewSent: AudioWaveView = itemView.findViewById(R.id.chat_audio_wave_view_sent)
+        val audioSentTime: TextView = itemView.findViewById(R.id.chat_audio_sent_time)
+    }
+
+    class AudioReceivedViewHolder(itemView: View) : ViewHolder(itemView) {
+        val playPauseAudioReceivedButton: Button = itemView.findViewById(R.id.chat_play_pause_audio_received_button)
+        val audioWaveViewReceived: AudioWaveView = itemView.findViewById(R.id.chat_audio_wave_view_received)
+        val audioReceivedTime: TextView = itemView.findViewById(R.id.chat_audio_received_time)
+    }
+
+//    fun stopMediaPlayer() {
+//        if (play) {
+//            play = false
+//            mediaPlayer.stop()
+//            mediaPlayer.release()
+//        }
+//    }
 }

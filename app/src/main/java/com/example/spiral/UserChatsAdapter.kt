@@ -53,7 +53,12 @@ class UserChatsAdapter(private val context: Context, private val data: List<User
                         val message = snapshot.children.last().getValue(Message::class.java)
                         val sender = if (message?.senderId == authentication.currentUser?.uid) "You: " else
                             chatsData[position].firstName + ": "
-                        holder.userLastMessage.text = sender + if (message?.type == "text") message.message else "photo sent"
+                        holder.userLastMessage.text = sender + when (message?.type) {
+                            "text" -> message.message
+                            "photo" -> "photo sent"
+                            "audio" -> "audio sent"
+                            else -> "message sent"
+                        }
                     } else {
                         holder.userLastMessage.text = "Start a conversation"
                     }
