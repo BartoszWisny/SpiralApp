@@ -64,6 +64,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var userPhoto: Bitmap
     private lateinit var photoMessageBitmap: Bitmap
     private var photoPath: String? = null
+    private var photoFromCamera = false
     private var audioPath: String? = null
     private var bottomMessageBarVisibility = true
     private var bottomAttachmentBarVisibility = false
@@ -236,6 +237,7 @@ class ChatActivity : AppCompatActivity() {
         outState.putBoolean("closeAudioButtonIsEnabled", closeAudioButton.isEnabled)
         outState.putBoolean("sendAudioButtonIsEnabled", sendAudioButton.isEnabled)
         outState.putString("photoPath", photoPath)
+        outState.putBoolean("photoFromCamera", photoFromCamera)
         outState.putString("audioPath", audioPath)
     }
 
@@ -252,6 +254,7 @@ class ChatActivity : AppCompatActivity() {
         closeAudioButton.isEnabled = savedInstanceState.getBoolean("closeAudioButtonIsEnabled")
         sendAudioButton.isEnabled = savedInstanceState.getBoolean("sendAudioButtonIsEnabled")
         photoPath = savedInstanceState.getString("photoPath")
+        photoFromCamera = savedInstanceState.getBoolean("photoFromCamera")
         audioPath = savedInstanceState.getString("audioPath")
         audioMessageTime.text = "0:00"
 
@@ -264,7 +267,8 @@ class ChatActivity : AppCompatActivity() {
         (stopReloadAudioButton as MaterialButton).icon = ResourcesCompat.getDrawable(resources, R.drawable.reload_icon, theme)
 
         if (photoPath != null) {
-            photoMessageBitmap = BitmapFactory.decodeStream(baseContext.contentResolver.openInputStream(Uri.parse(photoPath)))
+            photoMessageBitmap = BitmapFactory.decodeStream(baseContext.contentResolver.openInputStream(Uri
+                .parse(if (photoFromCamera) "file://$photoPath" else photoPath)))
             photoMessageImageView.setImageBitmap(photoMessageBitmap)
         }
     }
@@ -322,20 +326,22 @@ class ChatActivity : AppCompatActivity() {
     fun chatGalleryClick(view: View) {
         val permissionListener: PermissionListener = object : PermissionListener {
             override fun onPermissionGranted() {
+                photoFromCamera = false
                 val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
                 gallery.launch(intent)
             }
 
             override fun onPermissionDenied(deniedPermissions: List<String>) {}
         }
-        TedPermission.create().setPermissionListener(permissionListener)
-            .setDeniedMessage("Permission denied. If you want to select images from the gallery, grant permission in the settings.")
-            .setGotoSettingButtonText("Settings").setPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-            .check()
+        TedPermission.create().setScreenOrientation(resources.configuration.orientation)
+            .setPermissionListener(permissionListener).setDeniedMessage("Permission denied. If you want to select images from"
+            + " the gallery, grant permission in the settings.").setGotoSettingButtonText("Settings")
+            .setPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE).check()
     }
 
     private var gallery = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         result -> if (result.resultCode == Activity.RESULT_OK) {
+            photoFromCamera = false
             chatListLayout.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 bottomToTop = bottomPhotoBar.id
             }
@@ -352,6 +358,7 @@ class ChatActivity : AppCompatActivity() {
     fun chatTakePhotoClick(view: View) {
         val permissionListener: PermissionListener = object : PermissionListener {
             override fun onPermissionGranted() {
+                photoFromCamera = true
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 photoPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() + "/photo.jpg"
                 val cameraFile = photoPath?.let { File(it) }
@@ -363,14 +370,15 @@ class ChatActivity : AppCompatActivity() {
 
             override fun onPermissionDenied(deniedPermissions: List<String>) {}
         }
-        TedPermission.create().setPermissionListener(permissionListener)
-            .setDeniedMessage("Permission denied. If you want to take photos with the camera, grant permission in the settings.")
-            .setGotoSettingButtonText("Settings").setPermissions(android.Manifest.permission.CAMERA)
-            .check()
+        TedPermission.create().setScreenOrientation(resources.configuration.orientation)
+            .setPermissionListener(permissionListener).setDeniedMessage("Permission denied. If you want to take photos with"
+            + " the camera, grant permission in the settings.").setGotoSettingButtonText("Settings")
+            .setPermissions(android.Manifest.permission.CAMERA).check()
     }
 
     private var camera = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         result -> if (result.resultCode == Activity.RESULT_OK) {
+            photoFromCamera = true
             chatListLayout.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 bottomToTop = bottomPhotoBar.id
             }
@@ -378,9 +386,8 @@ class ChatActivity : AppCompatActivity() {
             bottomAttachmentBar.visibility = View.INVISIBLE
             bottomPhotoBar.visibility = View.VISIBLE
             bottomAudioBar.visibility = View.INVISIBLE
-            photoPath = "file://$photoPath"
-            photoMessageBitmap = BitmapFactory.decodeStream(baseContext.contentResolver.openInputStream(
-                Uri.parse(photoPath)))
+            photoMessageBitmap = BitmapFactory.decodeStream(baseContext.contentResolver.openInputStream(Uri
+                .parse("file://$photoPath")))
             photoMessageImageView.setImageBitmap(photoMessageBitmap)
         }
     }
@@ -417,9 +424,10 @@ class ChatActivity : AppCompatActivity() {
 
             override fun onPermissionDenied(deniedPermissions: List<String>) {}
         }
-        TedPermission.create().setPermissionListener(permissionListener)
-            .setDeniedMessage("Permission denied. If you want to record voice messages, grant permission in the settings.")
-            .setGotoSettingButtonText("Settings").setPermissions(android.Manifest.permission.RECORD_AUDIO).check()
+        TedPermission.create().setScreenOrientation(resources.configuration.orientation)
+            .setPermissionListener(permissionListener).setDeniedMessage("Permission denied. If you want to record voice"
+            + " messages, grant permission in the settings.").setGotoSettingButtonText("Settings")
+            .setPermissions(android.Manifest.permission.RECORD_AUDIO).check()
     }
 
     fun closeClick(view: View) {
@@ -439,6 +447,7 @@ class ChatActivity : AppCompatActivity() {
         bottomAudioBar.visibility = View.INVISIBLE
         photoMessageBitmap = BitmapFactory.decodeResource(resources, R.drawable.default_photo)
         photoMessageImageView.setImageBitmap(photoMessageBitmap)
+        photoPath = null
     }
 
     fun chatSendPhotoClick(view: View) {
@@ -468,6 +477,7 @@ class ChatActivity : AppCompatActivity() {
         bottomAudioBar.visibility = View.INVISIBLE
         photoMessageBitmap = BitmapFactory.decodeResource(resources, R.drawable.default_photo)
         photoMessageImageView.setImageBitmap(photoMessageBitmap)
+        photoPath = null
     }
 
     fun stopReloadAudioClick(view: View) {
