@@ -71,7 +71,10 @@ class UserProfileDisplayFragment : Fragment() {
         userProfileDisplayRefresh.setOnRefreshListener {
             // TODO
             userProfileDisplayRefresh.isRefreshing = false
-            loadProfilePicture(chat.tabAdapter!!.selectedProfile)
+            if (chat.tabAdapter!!.selectedProfile != "")
+                loadProfilePicture(chat.tabAdapter!!.selectedProfile)
+            else
+                loadProfilePicture(chat.currentUser.userId)
         }
         return view
     }

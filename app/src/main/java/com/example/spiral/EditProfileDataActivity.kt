@@ -51,7 +51,8 @@ class EditProfileDataActivity : AppCompatActivity() {
         genderText.setSelection(selection)
         firstNameText.setText(chat.currentUser.firstName)
         surnameText.setText(chat.currentUser.surname)
-        dateOfBirthText.text = chat.currentUser.dateOfBirth
+        dateOfBirthText.text = if (chat.currentUser.dateOfBirth != "") chat.currentUser.dateOfBirth
+            else LocalDate.now().minusYears(18).format(dateFormatter).toString()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -103,7 +104,7 @@ class EditProfileDataActivity : AppCompatActivity() {
     }
 
     fun dateOfBirthClick(view: View) {
-        val date = if (dateOfBirthText.text != "") {
+        val date = if (dateOfBirthText.text.toString() != "") {
                 LocalDate.parse(dateOfBirthText.text, dateFormatter)
             } else {
                 LocalDate.now().minusYears(18)
