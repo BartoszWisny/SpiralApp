@@ -1,6 +1,7 @@
 package com.example.spiral
 
 import android.app.Activity
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -15,6 +16,7 @@ import android.os.Environment
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -28,6 +30,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -42,7 +45,6 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
 import java.util.concurrent.TimeUnit
-
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var chatLayout: ConstraintLayout
@@ -183,7 +185,6 @@ class ChatActivity : AppCompatActivity() {
                 override fun onCancelled(error: DatabaseError) {}
             })
         chatRecyclerView.setHasFixedSize(true)
-        chatRecyclerView.setItemViewCacheSize(20)
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             val windowMetrics = windowManager.currentWindowMetrics
