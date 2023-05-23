@@ -208,11 +208,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putCharSequence("title", title.text)
+        outState.putString("selectedProfile", chat.tabAdapter?.selectedProfile)
         super.onSaveInstanceState(outState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         title.text = savedInstanceState.getCharSequence("title")
+        chat.tabAdapter?.selectedProfile = savedInstanceState.getString("selectedProfile").toString()
         super.onRestoreInstanceState(savedInstanceState)
     }
 

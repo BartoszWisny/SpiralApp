@@ -65,6 +65,10 @@ class UserProfileDisplayAdapter(private val context: Context, private val data: 
         holder.addToFriendsButton.setOnClickListener {
             Toast.makeText(context, "Not yet implemented!", Toast.LENGTH_SHORT).show()
         }
+        holder.editProfileDataButton.setOnClickListener {
+            val intent = Intent(context, EditProfileDataActivity::class.java)
+            context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int {
