@@ -7,7 +7,6 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
@@ -123,8 +122,22 @@ class EditProfileDataActivity : AppCompatActivity() {
                 val userId = authentication.currentUser?.uid!!
                 database = FirebaseDatabase.getInstance().reference
                 database.child("users").child(userId).setValue(User(userId, firstName, surname, dateOfBirth, gender, email))
-                Toast.makeText(this, "Profile data updated", Toast.LENGTH_SHORT).show()
-                finish()
+                val snackbar = Snackbar.make(view, "Profile data updated", Snackbar.LENGTH_SHORT)
+                snackbar.duration = 2000
+                snackbar.addCallback(
+                    object : Snackbar.Callback() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            finish()
+                        }
+                    }
+                )
+                val snackbarView = snackbar.view
+                snackbarView.setBackgroundResource(R.drawable.item_shape)
+                snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
+                val textView: TextView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text)
+                textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                snackbar.show()
             }
             else {
                 val snackbar = Snackbar.make(view, "Error: data was not changed!", Snackbar.LENGTH_SHORT)
