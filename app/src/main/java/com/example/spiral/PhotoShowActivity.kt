@@ -63,7 +63,7 @@ class PhotoShowActivity : AppCompatActivity() {
             photoReference.downloadUrl.addOnSuccessListener {
                 Picasso.get().load(it.toString()).into(photoShowPhoto)
             }.addOnFailureListener {
-                photoBitmap = BitmapFactory.decodeResource(resources, R.drawable.default_photo)
+                photoBitmap = BitmapFactory.decodeResource(resources, R.drawable.default_user_profile_photo)
                 photoShowPhoto.setImageBitmap(photoBitmap)
             }
         }

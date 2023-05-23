@@ -1,12 +1,12 @@
 package com.example.spiral
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,12 +62,7 @@ class UserProfileDisplayFragment : Fragment() {
         userProfileDisplayPhoto = view.findViewById(R.id.user_profile_display_photo)
 
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
-        val photoReference = storageReference.child("users").child(userId)
-        photoReference.downloadUrl.addOnSuccessListener {
-            Picasso.get().load(it.toString()).placeholder(R.drawable.default_user_profile_photo).into(userProfileDisplayPhoto)
-        }.addOnFailureListener {
-            userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
-        }
+        loadProfilePicture(userId)
         val data = arrayListOf<User>()
         data.add(chat.currentUser)
         userProfileDisplayAdapter = UserProfileDisplayAdapter(requireContext(), data)
@@ -76,6 +71,7 @@ class UserProfileDisplayFragment : Fragment() {
         userProfileDisplayRefresh.setOnRefreshListener {
             // TODO
             userProfileDisplayRefresh.isRefreshing = false
+            loadProfilePicture(chat.tabAdapter!!.selectedProfile)
         }
         return view
     }
@@ -85,12 +81,7 @@ class UserProfileDisplayFragment : Fragment() {
 
         if (chat.tabAdapter?.selectedProfile != "") {
             currentSelectedProfileId = chat.tabAdapter!!.selectedProfile
-            val photoReference = storageReference.child("users").child(currentSelectedProfileId)
-            photoReference.downloadUrl.addOnSuccessListener {
-                Picasso.get().load(it.toString()).placeholder(R.drawable.default_user_profile_photo).into(userProfileDisplayPhoto)
-            }.addOnFailureListener {
-                userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
-            }
+            loadProfilePicture(currentSelectedProfileId)
             val data = arrayListOf<User>()
             for (user in chat.usersList) {
                 if (user.userId == currentSelectedProfileId) {
@@ -101,17 +92,26 @@ class UserProfileDisplayFragment : Fragment() {
             userProfileDisplayListView.adapter = userProfileDisplayAdapter
         } else {
             val userId = FirebaseAuth.getInstance().currentUser!!.uid
-            val photoReference = storageReference.child("users").child(userId)
-            photoReference.downloadUrl.addOnSuccessListener {
-                Picasso.get().load(it.toString()).placeholder(R.drawable.default_user_profile_photo).into(userProfileDisplayPhoto)
-            }.addOnFailureListener {
-                userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
-            }
+            loadProfilePicture(userId)
             val data = arrayListOf<User>()
             data.add(chat.currentUser)
-//            Toast.makeText(context, chat.currentUser.userId, Toast.LENGTH_SHORT).show()
             userProfileDisplayAdapter = UserProfileDisplayAdapter(requireContext(), data)
             userProfileDisplayListView.adapter = userProfileDisplayAdapter
+        }
+    }
+
+    private fun loadProfilePicture(userId: String) {
+        val photoReference = storageReference.child("users").child(userId)
+        photoReference.downloadUrl.addOnSuccessListener {
+            Picasso.get().load(it.toString()).placeholder(R.drawable.default_user_profile_photo).into(userProfileDisplayPhoto)
+        }.addOnFailureListener {
+            userProfileDisplayPhoto.setImageResource(R.drawable.default_user_profile_photo)
+        }
+        userProfileDisplayPhoto.setOnClickListener{
+            val intent = Intent(context, PhotoShowActivity::class.java)
+            intent.putExtra("photoType", "profile")
+            intent.putExtra("photoId", userId)
+            startActivity(intent)
         }
     }
 

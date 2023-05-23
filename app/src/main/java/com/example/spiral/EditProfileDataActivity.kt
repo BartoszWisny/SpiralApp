@@ -103,7 +103,11 @@ class EditProfileDataActivity : AppCompatActivity() {
     }
 
     fun dateOfBirthClick(view: View) {
-        val date = LocalDate.parse(dateOfBirthText.text, dateFormatter)
+        val date = if (dateOfBirthText.text != "") {
+                LocalDate.parse(dateOfBirthText.text, dateFormatter)
+            } else {
+                LocalDate.now().minusYears(18)
+            }
         DatePickerDialog(this, datePickerDialogListener, date.year, date.month.value - 1, date.dayOfMonth).show()
     }
 
