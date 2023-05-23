@@ -2,7 +2,6 @@ package com.example.spiral
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.EditText
@@ -148,7 +147,6 @@ class EditProfileDataActivity : AppCompatActivity() {
     }
 
     private fun checkData(firstName: String, surname: String, dateOfBirth: String, gender: String): Boolean {
-        return !(TextUtils.isEmpty(firstName) || TextUtils.isEmpty(surname) || TextUtils.isEmpty(dateOfBirth)
-                || TextUtils.isEmpty(gender))
+        return !(firstName == "" || surname == "" || dateOfBirth == "" || gender == "")
     }
 }

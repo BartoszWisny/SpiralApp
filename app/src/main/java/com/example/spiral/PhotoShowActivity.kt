@@ -58,6 +58,14 @@ class PhotoShowActivity : AppCompatActivity() {
                 photoBitmap = BitmapFactory.decodeResource(resources, R.drawable.default_photo)
                 photoShowPhoto.setImageBitmap(photoBitmap)
             }
+        } else if (photoType == "profile") {
+            val photoReference = storageReference.child("users").child(photoId!!)
+            photoReference.downloadUrl.addOnSuccessListener {
+                Picasso.get().load(it.toString()).into(photoShowPhoto)
+            }.addOnFailureListener {
+                photoBitmap = BitmapFactory.decodeResource(resources, R.drawable.default_photo)
+                photoShowPhoto.setImageBitmap(photoBitmap)
+            }
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

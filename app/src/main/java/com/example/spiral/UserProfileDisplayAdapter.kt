@@ -38,7 +38,7 @@ class UserProfileDisplayAdapter(private val context: Context, private val data: 
             holder.birthdayTextView.text = "[no-data]"
         }
 
-        if (data[position].dateOfBirth.toString() != "") {
+        if (data[position].gender.toString() != "") {
             holder.genderTextView.text = data[position].gender
         } else {
             holder.genderTextView.text = "[no-data]"
