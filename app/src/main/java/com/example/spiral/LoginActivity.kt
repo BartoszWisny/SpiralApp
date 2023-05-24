@@ -35,8 +35,7 @@ import com.google.api.services.people.v1.model.Gender
 import com.google.api.services.people.v1.model.Person
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
 import java.net.URL
@@ -233,8 +232,17 @@ class LoginActivity : AppCompatActivity() {
                             if (it.isSuccessful) {
                                 database = FirebaseDatabase.getInstance().reference
                                 val userId = authentication.currentUser?.uid!!
-                                database.child("users").child(userId).setValue(User(userId, firstName, surname,
-                                    dateOfBirth, gender, email))
+                                database.child("users").child(userId).addValueEventListener(
+                                    object: ValueEventListener {
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            if (!snapshot.exists()) {
+                                                database.child("users").child(userId).setValue(User(userId, firstName,
+                                                    surname, dateOfBirth, gender, email))
+                                            }
+                                        }
+
+                                        override fun onCancelled(error: DatabaseError) {}
+                                    })
                                 val storageReference = storage.getReferenceFromUrl(chat.storageUrl)
                                 val photoReference = storageReference.child("users").child(userId)
                                 val byteArrayOutputStream = ByteArrayOutputStream()

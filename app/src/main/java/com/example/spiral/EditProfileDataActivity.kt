@@ -122,7 +122,7 @@ class EditProfileDataActivity : AppCompatActivity() {
                 val userId = authentication.currentUser?.uid!!
                 database = FirebaseDatabase.getInstance().reference
                 database.child("users").child(userId).setValue(User(userId, firstName, surname, dateOfBirth, gender, email))
-                val snackbar = Snackbar.make(view, "Profile data updated", Snackbar.LENGTH_SHORT)
+                val snackbar = Snackbar.make(view, "Profile data updated!", Snackbar.LENGTH_SHORT)
                 snackbar.duration = 2000
                 snackbar.addCallback(
                     object : Snackbar.Callback() {

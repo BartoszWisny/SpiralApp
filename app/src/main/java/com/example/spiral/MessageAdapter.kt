@@ -3,8 +3,6 @@ package com.example.spiral
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
@@ -23,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
 import rm.com.audiowave.AudioWaveView
+import wseemann.media.FFmpegMediaMetadataRetriever
+import java.net.URL
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -38,7 +38,6 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
     private val audioSent = 5
     private val audioReceived = 6
     private lateinit var photoBitmap: Bitmap
-    private var play = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
@@ -133,72 +132,77 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                 val audioReference = storageReference.child("chats").child(senderRoom).child("audios")
                     .child(audioId)
                 var audioPath: String? = null
-                holder.mediaPlayer = MediaPlayer()
-                audioReference.downloadUrl.addOnSuccessListener {
-                    audioPath = it.toString()
-                    holder.mediaPlayer.setDataSource(audioPath)
-                    holder.mediaPlayer.prepare()
-                }.addOnFailureListener {}
-                audioReference.getBytes(5 * 1024 * 1024).addOnSuccessListener {
-                    holder.audioWaveViewSent.setRawData(it)
-                }
                 var audioMinutes: Long
                 var audioSeconds: Long
-                holder.mediaPlayer.setOnPreparedListener {
+                audioReference.downloadUrl.addOnSuccessListener {
+                    audioPath = it.toString()
+                    val mediaMetadataRetriever = FFmpegMediaMetadataRetriever()
+                    mediaMetadataRetriever.setDataSource(audioPath)
+                    val duration = mediaMetadataRetriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION)
+                        .toLong()
+                    audioMinutes = TimeUnit.MILLISECONDS.toMinutes(duration)
+                    audioSeconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60L
+                    holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
                     holder.playPauseAudioSentButton.isEnabled = true
+                }.addOnFailureListener {}
+                var startClick = true
+                var play = false
+                holder.mediaPlayer.setOnPreparedListener {
+                    startClick = false
+                    play = true
+                    holder.mediaPlayer.start()
+                }
+                holder.mediaPlayer.setOnCompletionListener {
+                    play = false
+                    startClick = true
+                    holder.audioWaveViewSent.setRawData(ByteArray(0))
+                    holder.audioWaveViewSent.clearAnimation()
                     audioMinutes = TimeUnit.MILLISECONDS.toMinutes(holder.mediaPlayer.duration.toLong())
                     audioSeconds = TimeUnit.MILLISECONDS.toSeconds(holder.mediaPlayer.duration.toLong()) % 60L
+                    holder.audioWaveViewSent.progress = 0F
                     holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                    holder.mediaPlayer.stop()
+                    holder.mediaPlayer.reset()
                 }
                 holder.playPauseAudioSentButton.setOnClickListener {
-                    play = !play
-                    (holder.playPauseAudioSentButton as MaterialButton).icon = ResourcesCompat.getDrawable(context.resources,
-                        if (play) R.drawable.pause_icon else R.drawable.play_icon, context.theme)
-
-                    if (play) {
-                        val currentOrientation = context.resources.configuration.orientation
-                        (context as Activity).requestedOrientation = if (currentOrientation
-                            == Configuration.ORIENTATION_PORTRAIT) {
-                            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                        } else {
-                            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                        }
-                        holder.mediaPlayer.start()
-                        holder.mediaPlayer.setOnCompletionListener {
-                            play = false
-                            audioMinutes = TimeUnit.MILLISECONDS.toMinutes(holder.mediaPlayer.duration.toLong())
-                            audioSeconds = TimeUnit.MILLISECONDS.toSeconds(holder.mediaPlayer.duration.toLong()) % 60L
-                            holder.playPauseAudioSentButton.icon = ResourcesCompat.getDrawable(context.resources,
-                                R.drawable.play_icon, context.theme)
-                            holder.audioWaveViewSent.progress = 0F
-                            holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
-                            holder.mediaPlayer.stop()
-                            holder.mediaPlayer.reset()
-                            holder.mediaPlayer = MediaPlayer()
-                            holder.mediaPlayer.setDataSource(audioPath)
-                            holder.mediaPlayer.prepare()
-                        }
+                    if (startClick) {
+                        holder.mediaPlayer.setDataSource(audioPath)
+                        holder.audioWaveViewSent.setRawData(URL(audioPath).readBytes())
+                        holder.mediaPlayer.prepare()
                     } else {
-                        holder.mediaPlayer.pause()
-                        (context as Activity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                        play = !play
+
+                        if (play) {
+                            holder.mediaPlayer.start()
+                        } else {
+                            holder.mediaPlayer.pause()
+                        }
                     }
                 }
-                val timer = Timer()
-                timer.scheduleAtFixedRate(object : TimerTask() {
+                holder.timer.scheduleAtFixedRate(object : TimerTask() {
                     override fun run() {
-                        if (play && holder.mediaPlayer.isPlaying) {
+                        if (play) {
                             holder.audioWaveViewSent.progress = (100 * holder.mediaPlayer.currentPosition
-                                / holder.mediaPlayer.duration).toFloat()
+                                    / holder.mediaPlayer.duration).toFloat()
                             audioMinutes = TimeUnit.MILLISECONDS.toMinutes((holder.mediaPlayer.duration
-                                - holder.mediaPlayer.currentPosition).toLong())
+                                    - holder.mediaPlayer.currentPosition).toLong())
                             audioSeconds = TimeUnit.MILLISECONDS.toSeconds((holder.mediaPlayer.duration
-                                - holder.mediaPlayer.currentPosition).toLong()) % 60L
+                                    - holder.mediaPlayer.currentPosition).toLong()) % 60L
                             (context as Activity).runOnUiThread {
-                                holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                                holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d",
+                                    audioSeconds)
+                                (holder.playPauseAudioSentButton as MaterialButton).icon = ResourcesCompat.getDrawable(
+                                    context.resources, R.drawable.pause_icon, context.theme)
+                            }
+                        } else {
+                            (context as Activity).runOnUiThread {
+                                (holder.playPauseAudioSentButton as MaterialButton).icon = ResourcesCompat.getDrawable(
+                                    context.resources, R.drawable.play_icon, context.theme)
                             }
                         }
                     }
                 }, 0, 50)
+                holder.setIsRecyclable(false)
             }
             AudioReceivedViewHolder::class.java -> {
                 holder as AudioReceivedViewHolder
@@ -206,65 +210,77 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                 val audioReference = storageReference.child("chats").child(senderRoom).child("audios")
                     .child(audioId)
                 var audioPath: String? = null
-                holder.mediaPlayer = MediaPlayer()
-                audioReference.downloadUrl.addOnSuccessListener {
-                    audioPath = it.toString()
-                    holder.mediaPlayer.setDataSource(audioPath)
-                    holder.mediaPlayer.prepare()
-                }.addOnFailureListener {}
-                audioReference.getBytes(5 * 1024 * 1024).addOnSuccessListener {
-                    holder.audioWaveViewReceived.setRawData(it)
-                }
                 var audioMinutes: Long
                 var audioSeconds: Long
-                holder.mediaPlayer.setOnPreparedListener {
+                audioReference.downloadUrl.addOnSuccessListener {
+                    audioPath = it.toString()
+                    val mediaMetadataRetriever = FFmpegMediaMetadataRetriever()
+                    mediaMetadataRetriever.setDataSource(audioPath)
+                    val duration = mediaMetadataRetriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION)
+                        .toLong()
+                    audioMinutes = TimeUnit.MILLISECONDS.toMinutes(duration)
+                    audioSeconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60L
+                    holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
                     holder.playPauseAudioReceivedButton.isEnabled = true
+                }.addOnFailureListener {}
+                var startClick = true
+                var play = false
+                holder.mediaPlayer.setOnPreparedListener {
+                    startClick = false
+                    play = true
+                    holder.mediaPlayer.start()
+                }
+                holder.mediaPlayer.setOnCompletionListener {
+                    play = false
+                    startClick = true
+                    holder.audioWaveViewReceived.setRawData(ByteArray(0))
+                    holder.audioWaveViewReceived.clearAnimation()
                     audioMinutes = TimeUnit.MILLISECONDS.toMinutes(holder.mediaPlayer.duration.toLong())
                     audioSeconds = TimeUnit.MILLISECONDS.toSeconds(holder.mediaPlayer.duration.toLong()) % 60L
+                    holder.audioWaveViewReceived.progress = 0F
                     holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                    holder.mediaPlayer.stop()
+                    holder.mediaPlayer.reset()
                 }
                 holder.playPauseAudioReceivedButton.setOnClickListener {
-                    play = !play
-                    (holder.playPauseAudioReceivedButton as MaterialButton).icon = ResourcesCompat.getDrawable(context.resources,
-                        if (play) R.drawable.pause_icon else R.drawable.play_icon, context.theme)
-
-                    if (play) {
-                        holder.mediaPlayer.start()
-                        holder.mediaPlayer.setOnCompletionListener {
-                            play = false
-                            audioMinutes = TimeUnit.MILLISECONDS.toMinutes(holder.mediaPlayer.duration.toLong())
-                            audioSeconds = TimeUnit.MILLISECONDS.toSeconds(holder.mediaPlayer.duration.toLong()) % 60L
-                            holder.playPauseAudioReceivedButton.icon = ResourcesCompat.getDrawable(context.resources,
-                                R.drawable.play_icon, context.theme)
-                            holder.audioWaveViewReceived.progress = 0F
-                            holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
-                            holder.mediaPlayer.stop()
-                            holder.mediaPlayer.reset()
-                            holder.mediaPlayer = MediaPlayer()
-                            holder.mediaPlayer.setDataSource(audioPath)
-                            holder.mediaPlayer.prepare()
-                        }
+                    if (startClick) {
+                        holder.mediaPlayer.setDataSource(audioPath)
+                        holder.audioWaveViewReceived.setRawData(URL(audioPath).readBytes())
+                        holder.mediaPlayer.prepare()
                     } else {
-                        holder.mediaPlayer.pause()
+                        play = !play
+
+                        if (play) {
+                            holder.mediaPlayer.start()
+                        } else {
+                            holder.mediaPlayer.pause()
+                        }
                     }
                 }
-                val timer = Timer()
-                timer.scheduleAtFixedRate(object : TimerTask() {
+                holder.timer.scheduleAtFixedRate(object : TimerTask() {
                     override fun run() {
-                        if (play && holder.mediaPlayer.isPlaying) {
+                        if (play) {
                             holder.audioWaveViewReceived.progress = (100 * holder.mediaPlayer.currentPosition
-                                / holder.mediaPlayer.duration).toFloat()
+                                    / holder.mediaPlayer.duration).toFloat()
                             audioMinutes = TimeUnit.MILLISECONDS.toMinutes((holder.mediaPlayer.duration
-                                - holder.mediaPlayer.currentPosition).toLong())
+                                    - holder.mediaPlayer.currentPosition).toLong())
                             audioSeconds = TimeUnit.MILLISECONDS.toSeconds((holder.mediaPlayer.duration
-                                - holder.mediaPlayer.currentPosition).toLong()) % 60L
+                                    - holder.mediaPlayer.currentPosition).toLong()) % 60L
                             (context as Activity).runOnUiThread {
                                 holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d",
                                     audioSeconds)
+                                (holder.playPauseAudioReceivedButton as MaterialButton).icon = ResourcesCompat.getDrawable(
+                                    context.resources, R.drawable.pause_icon, context.theme)
+                            }
+                        } else {
+                            (context as Activity).runOnUiThread {
+                                (holder.playPauseAudioReceivedButton as MaterialButton).icon = ResourcesCompat.getDrawable(
+                                    context.resources, R.drawable.play_icon, context.theme)
                             }
                         }
                     }
                 }, 0, 50)
+                holder.setIsRecyclable(false)
             }
             else -> {
                 holder as MessageSentViewHolder
@@ -274,8 +290,32 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
         }
     }
 
+    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+
+        when (holder.javaClass) {
+            AudioSentViewHolder::class.java -> {
+                holder as AudioSentViewHolder
+                holder.timer.cancel()
+                holder.mediaPlayer.stop()
+                holder.mediaPlayer.reset()
+            }
+            AudioReceivedViewHolder::class.java -> {
+                holder as AudioReceivedViewHolder
+                holder.timer.cancel()
+                holder.mediaPlayer.stop()
+                holder.mediaPlayer.reset()
+            }
+            else -> {}
+        }
+    }
+
     override fun getItemCount(): Int {
         return data.size
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -313,6 +353,7 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
         val audioWaveViewSent: AudioWaveView = itemView.findViewById(R.id.chat_audio_wave_view_sent)
         val audioSentTime: TextView = itemView.findViewById(R.id.chat_audio_sent_time)
         var mediaPlayer = MediaPlayer()
+        val timer = Timer()
     }
 
     class AudioReceivedViewHolder(itemView: View) : ViewHolder(itemView) {
@@ -320,5 +361,6 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
         val audioWaveViewReceived: AudioWaveView = itemView.findViewById(R.id.chat_audio_wave_view_received)
         val audioReceivedTime: TextView = itemView.findViewById(R.id.chat_audio_received_time)
         var mediaPlayer = MediaPlayer()
+        val timer = Timer()
     }
 }

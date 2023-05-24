@@ -1,5 +1,6 @@
 package com.example.spiral
 
+import android.media.MediaPlayer
 import androidx.viewpager2.widget.ViewPager2
 
 class Chat {

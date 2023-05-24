@@ -117,5 +117,4 @@ class UserProfileDisplayFragment : Fragment() {
             startActivity(intent)
         }
     }
-
 }
