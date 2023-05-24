@@ -47,7 +47,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"/>
-
+        <activity android:name=".EditProfilePhotoActivity"
+            android:exported="false"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

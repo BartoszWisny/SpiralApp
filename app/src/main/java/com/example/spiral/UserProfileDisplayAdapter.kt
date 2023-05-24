@@ -69,6 +69,10 @@ class UserProfileDisplayAdapter(private val context: Context, private val data: 
             val intent = Intent(context, EditProfileDataActivity::class.java)
             context.startActivity(intent)
         }
+        holder.editProfilePhotoButton.setOnClickListener {
+            val intent = Intent(context, EditProfilePhotoActivity::class.java)
+            context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int {
