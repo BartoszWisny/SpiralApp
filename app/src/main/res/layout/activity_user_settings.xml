@@ -40,7 +40,7 @@
                 android:letterSpacing="0"
                 android:onClick="signOutClick"
                 android:stateListAnimator="@null"
-                android:text="Sign out"
+                android:text="@string/settings_sign_out"
                 android:textAlignment="gravity"
                 android:textAllCaps="false"
                 android:textColor="@color/buttonText"

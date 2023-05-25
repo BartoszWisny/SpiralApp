@@ -92,19 +92,19 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 title.text = when (position) {
-                    0 -> "Chats"
-                    1 -> "Profiles"
+                    0 -> getString(R.string.main_chats)
+                    1 -> getString(R.string.main_profiles)
                     2 -> {
-                        if (chat.tabAdapter?.selectedProfile == "")  "Your profile"
-                        else "Profile display"
+                        if (chat.tabAdapter?.selectedProfile == "")  getString(R.string.main_your_profile)
+                        else getString(R.string.main_profile_display)
                     }
-                    else -> "Chats"
+                    else -> getString(R.string.main_chats)
                 }
 
                 searchText.hint = when (position) {
-                    0 -> "Search chat by username"
-                    1 -> "Search profile by username"
-                    else -> "Search chat by username"
+                    0 -> getString(R.string.main_search_chat)
+                    1 -> getString(R.string.main_search_profile)
+                    else -> getString(R.string.main_search_chat)
                 }
 
                 //when swiped from profile display - delete selected profile

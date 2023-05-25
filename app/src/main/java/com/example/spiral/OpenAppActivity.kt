@@ -9,8 +9,6 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.motion.widget.MotionLayout.TransitionListener
 import androidx.core.content.res.ResourcesCompat
 import com.google.firebase.auth.FirebaseAuth
-import java.net.InetAddress
-import java.net.UnknownHostException
 
 
 class OpenAppActivity : AppCompatActivity() {

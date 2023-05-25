@@ -55,12 +55,12 @@ class UserChatsAdapter(private val context: Context, private val data: List<User
                             chatsData[position].firstName + ": "
                         holder.userLastMessage.text = sender + when (message?.type) {
                             "text" -> message.message
-                            "photo" -> "photo sent"
-                            "audio" -> "audio sent"
-                            else -> "message sent"
+                            "photo" -> context.getString(R.string.user_chats_adapter_photo_sent)
+                            "audio" -> context.getString(R.string.user_chats_adapter_audio_sent)
+                            else -> context.getString(R.string.user_chats_adapter_message_sent)
                         }
                     } else {
-                        holder.userLastMessage.text = "Start a conversation"
+                        holder.userLastMessage.text = context.getString(R.string.user_chats_adapter_start_conversation)
                     }
                 }
 

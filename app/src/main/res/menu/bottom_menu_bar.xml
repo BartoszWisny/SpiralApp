@@ -4,13 +4,13 @@
     <item
         android:id="@+id/user_chats"
         android:icon="@drawable/user_chats_icon"
-        android:title="Chats" />
+        android:title="@string/bottom_menu_chats" />
     <item
         android:id="@+id/user_profiles"
         android:icon="@drawable/user_profiles_icon"
-        android:title="Profiles" />
+        android:title="@string/bottom_menu_profiles" />
     <item
         android:id="@+id/user_profile_display"
         android:icon="@drawable/user_profile_display_icon"
-        android:title="Profile display" />
+        android:title="@string/bottom_menu_profile_display" />
 </menu>

@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:autoLink="web|phone|email"
             android:padding="10dp"
-            android:text="message_received"
+            android:text="@string/chat_message_received"
             android:textColor="@color/blue_1"
             android:textColorLink="@color/blue_1"
             android:textSize="16sp"

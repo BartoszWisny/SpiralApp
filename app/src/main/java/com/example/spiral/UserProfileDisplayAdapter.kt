@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 
@@ -34,13 +33,17 @@ class UserProfileDisplayAdapter(private val context: Context, private val data: 
         if (data[position].dateOfBirth.toString() != "") {
             holder.birthdayTextView.text = data[position].dateOfBirth
         } else {
-            holder.birthdayTextView.text = "[no-data]"
+            holder.birthdayTextView.text = context.getString(R.string.no_data)
         }
 
         if (data[position].gender.toString() != "") {
-            holder.genderTextView.text = data[position].gender
+            when (data[position].gender) {
+                "Male" -> holder.genderTextView.text = context.getString(R.string.gender_male)
+                "Female" -> holder.genderTextView.text = context.getString(R.string.gender_female)
+                else -> holder.genderTextView.text = context.getString(R.string.gender_not_specified)
+            }
         } else {
-            holder.genderTextView.text = "[no-data]"
+            holder.genderTextView.text = context.getString(R.string.no_data)
         }
 
         // Setting proper buttons to visible

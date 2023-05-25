@@ -1,3 +1,69 @@
 <resources>
     <string name="app_name">Spiral</string>
+    <string name="chat_type_message">Type a message</string>
+    <string name="first_name">First name</string>
+    <string name="surname">Surname</string>
+    <string name="date_of_birth">Date of birth</string>
+    <string name="edit_profile_confirm_changes">Confirm changes</string>
+    <string name="edit_profile_photo_open_gallery">Open gallery</string>
+    <string name="edit_profile_photo_open_camera">Take picture</string>
+    <string name="edit_profile_photo_confirm">Set as profile picture</string>
+    <string name="edit_profile_photo_cancel">Cancel</string>
+    <string name="login_email_address">Email address</string>
+    <string name="login_password">Password</string>
+    <string name="login_login_with_email">Login with email</string>
+    <string name="login_login_with_google">Login with Google</string>
+    <string name="login_sign_up">Sign up</string>
+    <string name="main_chats">Chats</string>
+    <string name="main_search_chat">Search chat by username</string>
+    <string name="no_internet_connection">No Internet Connection</string>
+    <string name="sign_up_first_name">First name</string>
+    <string name="sign_up_surname">Surname</string>
+    <string name="sign_up_date_of_birth">Date of birth</string>
+    <string name="sign_up_email">Email</string>
+    <string name="sign_up_password">Password</string>
+    <string name="sign_up_confirm_password">Confirm password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="settings_sign_out">Log out</string>
+    <string name="chat_audio_sent_default_length" translatable="false">0:00</string>
+    <string name="chat_message_received" translatable="false">message_received</string>
+    <string name="chat_message_sent" translatable="false">Message sent</string>
+    <string name="chat_photo_sent">Photo sent</string>
+    <string name="chat_audio_sent">Audio sent</string>
+    <string name="user_chats_name" translatable="false">user_chats_name</string>
+    <string name="user_chats_last_message" translatable="false">user_chats_last_message</string>
+    <string name="user_profiles_name" translatable="false">user_profiles_name</string>
+    <string name="user_profile_name" translatable="false">user_profile_name</string>
+    <string name="user_profile_display_date_of_birth_with_age">Date of birth: date_of_birth (age)</string>
+    <string name="user_profile_display_list_item_gender_default">Gender: gender</string>
+    <string name="user_profile_display_list_item_send_message">Send message</string>
+    <string name="user_profile_list_item_edit_profile_photo">Edit profile photo</string>
+    <string name="user_profile_list_item_edit_profile_data">Edit profile data</string>
+    <string name="no_data">[no-data]</string>
+    <string name="user_chats_adapter_photo_sent">photo sent</string>
+    <string name="user_chats_adapter_audio_sent">audio sent</string>
+    <string name="user_chats_adapter_message_sent">message sent</string>
+    <string name="user_chats_adapter_start_conversation">Start a conversation</string>
+    <string name="main_your_profile">Your profile</string>
+    <string name="main_profile_display">Profile display</string>
+    <string name="main_profiles">Profiles</string>
+    <string name="main_search_profile">Search profile by username</string>
+    <string name="login_error_invalid_email">Error: the specified email address is invalid!</string>
+    <string name="login_error_empty_fields">Error: not all the fields have been filled in!</string>
+    <string name="login_error_wrong_email_or_password">Error: wrong email address or password!</string>
+    <string name="login_error_google_login_failed">Error: Google login failed!</string>
+    <string name="no_permission_camera">Permission denied. If you want to take photos with the camera, grant permission in the settings.</string>
+    <string name="no_permission_gallery">Permission denied. If you want to select images from the gallery, grant permission in the settings.</string>
+    <string name="edit_profile_photo_profile_photo_updated">Profile photo updated!</string>
+    <string name="edit_profile_photo_upload_failure">Unable to upload photo</string>
+    <string name="edit_profile_data_error_no_change">Error: data was not changed!</string>
+    <string name="edit_profile_data_error_empty_fields">Error: not all the fields have been filled in!</string>
+    <string name="edit_profile_data_updated">Profile data updated!</string>
+    <string name="chat_first_name_surname_default" translatable="false">first_name surname</string>
+    <string name="bottom_menu_chats">Chats</string>
+    <string name="bottom_menu_profiles">Profiles</string>
+    <string name="bottom_menu_profile_display">Profile display</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_not_specified">Gender not specified</string>
 </resources>

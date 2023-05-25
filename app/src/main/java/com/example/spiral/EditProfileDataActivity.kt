@@ -136,7 +136,7 @@ class EditProfileDataActivity : AppCompatActivity() {
                 val userId = authentication.currentUser?.uid!!
                 database = FirebaseDatabase.getInstance().reference
                 database.child("users").child(userId).setValue(User(userId, firstName, surname, dateOfBirth, gender, email))
-                val snackbar = Snackbar.make(view, "Profile data updated!", Snackbar.LENGTH_SHORT)
+                val snackbar = Snackbar.make(view, getString(R.string.edit_profile_data_updated), Snackbar.LENGTH_SHORT)
                 snackbar.duration = 2000
                 snackbar.addCallback(
                     object : Snackbar.Callback() {
@@ -154,7 +154,7 @@ class EditProfileDataActivity : AppCompatActivity() {
                 snackbar.show()
             }
             else {
-                val snackbar = Snackbar.make(view, "Error: data was not changed!", Snackbar.LENGTH_SHORT)
+                val snackbar = Snackbar.make(view, getString(R.string.edit_profile_data_error_no_change), Snackbar.LENGTH_SHORT)
                 val snackbarView = snackbar.view
                 snackbarView.setBackgroundResource(R.drawable.item_shape)
                 snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
@@ -163,7 +163,7 @@ class EditProfileDataActivity : AppCompatActivity() {
                 snackbar.show()
             }
         } else {
-            val snackbar = Snackbar.make(view, "Error: not all the fields have been filled in!", Snackbar.LENGTH_SHORT)
+            val snackbar = Snackbar.make(view, getString(R.string.edit_profile_data_error_empty_fields), Snackbar.LENGTH_SHORT)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundResource(R.drawable.item_shape)
             snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
