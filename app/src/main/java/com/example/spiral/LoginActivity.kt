@@ -238,17 +238,17 @@ class LoginActivity : AppCompatActivity() {
                                             if (!snapshot.exists()) {
                                                 database.child("users").child(userId).setValue(User(userId, firstName,
                                                     surname, dateOfBirth, gender, email))
+                                                val storageReference = storage.getReferenceFromUrl(chat.storageUrl)
+                                                val photoReference = storageReference.child("users").child(userId)
+                                                val byteArrayOutputStream = ByteArrayOutputStream()
+                                                photo.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
+                                                val data: ByteArray = byteArrayOutputStream.toByteArray()
+                                                photoReference.putBytes(data)
                                             }
                                         }
 
                                         override fun onCancelled(error: DatabaseError) {}
                                     })
-                                val storageReference = storage.getReferenceFromUrl(chat.storageUrl)
-                                val photoReference = storageReference.child("users").child(userId)
-                                val byteArrayOutputStream = ByteArrayOutputStream()
-                                photo.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
-                                val data: ByteArray = byteArrayOutputStream.toByteArray()
-                                photoReference.putBytes(data)
                                 val intent = Intent(this, MainActivity::class.java)
                                 startActivity(intent)
                             } else {

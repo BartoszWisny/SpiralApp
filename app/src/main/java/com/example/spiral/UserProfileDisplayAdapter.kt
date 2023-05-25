@@ -12,8 +12,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 
-class UserProfileDisplayAdapter(private val context: Context, private val data: List<User>): RecyclerView.Adapter<UserProfileDisplayAdapter.ViewHolder>() {
-
+class UserProfileDisplayAdapter(private val context: Context, private val data: List<User>):
+    RecyclerView.Adapter<UserProfileDisplayAdapter.ViewHolder>() {
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var usernameTextView: TextView = view.findViewById(R.id.user_profile_display_name)
         var birthdayTextView: TextView = view.findViewById(R.id.user_profile_display_date_of_birth)
@@ -21,7 +21,6 @@ class UserProfileDisplayAdapter(private val context: Context, private val data: 
         var editProfilePhotoButton: Button = view.findViewById(R.id.edit_profile_photo_button)
         var editProfileDataButton: Button = view.findViewById(R.id.edit_profile_data_button)
         var sendMessageButton: Button = view.findViewById(R.id.send_message_button)
-        var addToFriendsButton: Button = view.findViewById(R.id.add_to_friends_button)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -49,21 +48,16 @@ class UserProfileDisplayAdapter(private val context: Context, private val data: 
             holder.editProfilePhotoButton.visibility = View.VISIBLE
             holder.editProfileDataButton.visibility = View.VISIBLE
             holder.sendMessageButton.visibility = View.GONE
-            holder.addToFriendsButton.visibility = View.GONE
         } else {
             holder.editProfilePhotoButton.visibility = View.GONE
             holder.editProfileDataButton.visibility = View.GONE
             holder.sendMessageButton.visibility = View.VISIBLE
-            holder.addToFriendsButton.visibility = View.VISIBLE
         }
         holder.sendMessageButton.setOnClickListener {
             val intent = Intent(context, ChatActivity::class.java)
             intent.putExtra("userId", data[position].userId)
             intent.putExtra("username", holder.usernameTextView.text.toString())
             (context as Activity).startActivity(intent)
-        }
-        holder.addToFriendsButton.setOnClickListener {
-            Toast.makeText(context, "Not yet implemented!", Toast.LENGTH_SHORT).show()
         }
         holder.editProfileDataButton.setOnClickListener {
             val intent = Intent(context, EditProfileDataActivity::class.java)

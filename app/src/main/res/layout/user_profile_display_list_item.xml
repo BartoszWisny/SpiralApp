@@ -111,25 +111,6 @@
             app:backgroundTint="@null" />
 
         <Button
-            android:id="@+id/add_to_friends_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="50dp"
-            android:background="@drawable/button_shape"
-            android:letterSpacing="0"
-            android:onClick="addToFriendsClick"
-            android:stateListAnimator="@null"
-            android:text="Add to friends"
-            android:textAlignment="gravity"
-            android:textAllCaps="false"
-            android:textColor="@color/buttonText"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:backgroundTint="@null" />
-
-        <Button
             android:id="@+id/edit_profile_photo_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

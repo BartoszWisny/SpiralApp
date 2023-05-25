@@ -11,12 +11,16 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
-lateinit var userProfilesAdapter: UserProfilesAdapter
+var userProfilesAdapter: UserProfilesAdapter? = null
 
 class UserProfilesFragment : Fragment() {
     private lateinit var userProfilesListView: RecyclerView
     private lateinit var userProfilesRefresh: SwipeRefreshLayout
+    private lateinit var authentication: FirebaseAuth
+    private lateinit var database: DatabaseReference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,6 +29,8 @@ class UserProfilesFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_user_profiles, container, false)
         userProfilesListView = view.findViewById(R.id.user_profiles_list)
         userProfilesRefresh = view.findViewById(R.id.user_profiles_refresh)
+        authentication = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance().reference
         when (requireActivity().applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
             Configuration.UI_MODE_NIGHT_YES -> {
                 userProfilesRefresh.setColorSchemeColors(ResourcesCompat.getColor(resources, R.color.gray_1,
@@ -57,8 +63,25 @@ class UserProfilesFragment : Fragment() {
         userProfilesAdapter = UserProfilesAdapter(requireContext(), chat.usersList)
         userProfilesListView.adapter = userProfilesAdapter
         userProfilesRefresh.setOnRefreshListener {
-            // TODO
-            Toast.makeText(context, "odświeżam", Toast.LENGTH_SHORT).show()
+            database.child("users").addValueEventListener(object: ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    chat.usersList.clear()
+
+                    for (postSnapshot in snapshot.children) {
+                        val user = postSnapshot.getValue(User::class.java)
+
+                        if (authentication.currentUser?.uid != user?.userId) {
+                            chat.usersList.add(user!!)
+                        } else {
+                            chat.currentUser = user!!
+                        }
+                    }
+
+                    userProfilesAdapter!!.notifyDataSetChanged()
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
             userProfilesRefresh.isRefreshing = false
         }
         return view

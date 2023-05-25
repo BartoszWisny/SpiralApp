@@ -21,7 +21,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
 import rm.com.audiowave.AudioWaveView
-import wseemann.media.FFmpegMediaMetadataRetriever
 import java.net.URL
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -129,6 +128,7 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
             AudioSentViewHolder::class.java -> {
                 holder as AudioSentViewHolder
                 val audioId = message.message
+                val audioDuration = message.audioDuration
                 val audioReference = storageReference.child("chats").child(senderRoom).child("audios")
                     .child(audioId)
                 var audioPath: String? = null
@@ -136,12 +136,8 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                 var audioSeconds: Long
                 audioReference.downloadUrl.addOnSuccessListener {
                     audioPath = it.toString()
-                    val mediaMetadataRetriever = FFmpegMediaMetadataRetriever()
-                    mediaMetadataRetriever.setDataSource(audioPath)
-                    val duration = mediaMetadataRetriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION)
-                        .toLong()
-                    audioMinutes = TimeUnit.MILLISECONDS.toMinutes(duration)
-                    audioSeconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60L
+                    audioMinutes = TimeUnit.MILLISECONDS.toMinutes(audioDuration!!)
+                    audioSeconds = TimeUnit.MILLISECONDS.toSeconds(audioDuration) % 60L
                     holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
                     holder.playPauseAudioSentButton.isEnabled = true
                 }.addOnFailureListener {}
@@ -207,6 +203,7 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
             AudioReceivedViewHolder::class.java -> {
                 holder as AudioReceivedViewHolder
                 val audioId = message.message
+                val audioDuration = message.audioDuration
                 val audioReference = storageReference.child("chats").child(senderRoom).child("audios")
                     .child(audioId)
                 var audioPath: String? = null
@@ -214,12 +211,8 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                 var audioSeconds: Long
                 audioReference.downloadUrl.addOnSuccessListener {
                     audioPath = it.toString()
-                    val mediaMetadataRetriever = FFmpegMediaMetadataRetriever()
-                    mediaMetadataRetriever.setDataSource(audioPath)
-                    val duration = mediaMetadataRetriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION)
-                        .toLong()
-                    audioMinutes = TimeUnit.MILLISECONDS.toMinutes(duration)
-                    audioSeconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60L
+                    audioMinutes = TimeUnit.MILLISECONDS.toMinutes(audioDuration!!)
+                    audioSeconds = TimeUnit.MILLISECONDS.toSeconds(audioDuration) % 60L
                     holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
                     holder.playPauseAudioReceivedButton.isEnabled = true
                 }.addOnFailureListener {}

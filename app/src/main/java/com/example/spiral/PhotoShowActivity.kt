@@ -18,7 +18,6 @@ class PhotoShowActivity : AppCompatActivity() {
     private var storage = FirebaseStorage.getInstance()
     private val storageReference = storage.getReferenceFromUrl(chat.storageUrl)
     private var photoType: String? = null
-    private var userId: String? = null
     private var senderRoom: String? = null
     private var photoId: String? = null
     private lateinit var photoBitmap: Bitmap

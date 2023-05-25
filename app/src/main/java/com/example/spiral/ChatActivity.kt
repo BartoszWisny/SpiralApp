@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
@@ -32,15 +33,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import com.squareup.picasso.Picasso
 import com.visualizer.amplitude.AudioRecordView
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -75,6 +82,9 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var authentication: FirebaseAuth
     private lateinit var database: DatabaseReference
     private var storage = FirebaseStorage.getInstance()
+    private lateinit var messaging: FirebaseMessaging
+    private lateinit var ifcmService: IFCMService
+    private var compositeDisposable = CompositeDisposable()
     private var senderRoom: String? = null
     private var receiverRoom: String? = null
     private val timer = Timer()
@@ -85,6 +95,8 @@ class ChatActivity : AppCompatActivity() {
     private var audioMinutes = 0L
     private var audioSeconds = 0L
     private var audioFile: File? = null
+    private var currentPosition = 0
+    private var loaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,6 +105,8 @@ class ChatActivity : AppCompatActivity() {
         StrictMode.setThreadPolicy(policy)
         authentication = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
+        messaging = FirebaseMessaging.getInstance()
+        ifcmService = RetrofitFCMClient.getInstance().create(IFCMService::class.java)
         chatLayout = findViewById(R.id.chat_layout)
 
         when (applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
@@ -137,62 +151,40 @@ class ChatActivity : AppCompatActivity() {
         chatUsername.text = intent.getStringExtra("username")!!
         senderRoom = authentication.currentUser?.uid + userId
         receiverRoom = userId + authentication.currentUser?.uid
+        chat.roomSelected = receiverRoom
         messageAdapter = MessageAdapter(this, chat.messagesList, senderRoom!!)
         chatRecyclerView.layoutManager = LinearLayoutManager(this)
         (chatRecyclerView.layoutManager as LinearLayoutManager).stackFromEnd = true
-        // messageAdapter.setHasStableIds(true)
         chatRecyclerView.adapter = messageAdapter
         chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
         database.child("chats").child(senderRoom!!).child("messages").addValueEventListener(
             object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    currentPosition = (chatRecyclerView.layoutManager as LinearLayoutManager)
+                        .findLastCompletelyVisibleItemPosition()
                     chat.messagesList.clear()
-                    // chat.messagesKeyList.clear()
 
                     for (postSnapshot in snapshot.children) {
                         val message = postSnapshot.getValue(Message::class.java)
                         chat.messagesList.add(message!!)
-                        // snapshot.key?.let { chat.messagesKeyList.add(it) }
                     }
 
-                    chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
-                    messageAdapter.notifyDataSetChanged()
+                    if (currentPosition == messageAdapter.itemCount - 2) {
+                        chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
+                    }
+
+                    if (loaded) {
+                        messageAdapter.notifyItemInserted(messageAdapter.itemCount - 1)
+                    } else {
+                        messageAdapter.notifyDataSetChanged()
+                        loaded = true
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
             })
-//        database.child("chats").child(senderRoom!!).child("messages").addChildEventListener(
-//            object: ChildEventListener {
-//                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-//                    val message = snapshot.getValue(Message::class.java)
-//                    chat.messagesList.add(message!!)
-//                    // snapshot.key?.let { chat.messagesKeyList.add(it) }
-//                    if ((chatRecyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
-//                        == messageAdapter.itemCount - 2) {
-//                        chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
-//                    }
-//                    messageAdapter.notifyDataSetChanged()
-//                }
-//
-//                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
-//
-//                override fun onChildRemoved(snapshot: DataSnapshot) {
-////                    val index = chat.messagesKeyList.indexOf(snapshot.key)
-////                    chat.messagesList.removeAt(index)
-////                    chat.messagesKeyList.removeAt(index)
-////                    if ((chatRecyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
-////                        == messageAdapter.itemCount - 2) {
-////                        chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
-////                    }
-////                    messageAdapter.notifyDataSetChanged()
-//                }
-//
-//                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-//
-//                override fun onCancelled(error: DatabaseError) {}
-//            })
-        // chatRecyclerView.setHasFixedSize(true)
         chatRecyclerView.setItemViewCacheSize(20)
+        messaging.subscribeToTopic(receiverRoom!!)
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             val windowMetrics = windowManager.currentWindowMetrics
@@ -202,20 +194,14 @@ class ChatActivity : AppCompatActivity() {
 
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                if (recordAudio /* && audioTime < 600000L */) {
+                if (recordAudio) {
                     audioTime = System.currentTimeMillis() - audioStart
                     audioMinutes = TimeUnit.MILLISECONDS.toMinutes(audioTime)
                     audioSeconds = TimeUnit.MILLISECONDS.toSeconds(audioTime) % 60L
                     audioMessageTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
                     currentMaxAmplitude = mediaRecorder.maxAmplitude
                     audioRecordView.update(currentMaxAmplitude)
-                } /* else if (audioTime >= 600000L) {
-                    mediaRecorder.stop()
-                    mediaRecorder.release()
-                    closeAudioButton.isEnabled = true
-                    sendAudioButton.isEnabled = true
-                    this@ChatActivity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-                } */
+                }
             }
         }, 0, 100)
 
@@ -289,17 +275,25 @@ class ChatActivity : AppCompatActivity() {
         database.child("chats").child(senderRoom!!).child("messages").addValueEventListener(
             object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    currentPosition = (chatRecyclerView.layoutManager as LinearLayoutManager)
+                        .findLastCompletelyVisibleItemPosition()
                     chat.messagesList.clear()
-                    // chat.messagesKeyList.clear()
 
                     for (postSnapshot in snapshot.children) {
                         val message = postSnapshot.getValue(Message::class.java)
                         chat.messagesList.add(message!!)
-                        // snapshot.key?.let { chat.messagesKeyList.add(it) }
                     }
 
-                    chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
-                    messageAdapter.notifyDataSetChanged()
+                    if (currentPosition == messageAdapter.itemCount - 2) {
+                        chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
+                    }
+
+                    if (loaded) {
+                        messageAdapter.notifyItemInserted(messageAdapter.itemCount - 1)
+                    } else {
+                        messageAdapter.notifyDataSetChanged()
+                        loaded = true
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
@@ -319,11 +313,16 @@ class ChatActivity : AppCompatActivity() {
             closeAudioButton.isEnabled = true
             sendAudioButton.isEnabled = true
         }
+
+        loaded = false
     }
 
     override fun onStop() {
         super.onStop()
+        chat.messagesList.clear()
+        messageAdapter.notifyDataSetChanged()
         chatRecyclerView.adapter = null
+        loaded = false
     }
 
     override fun onDestroy() {
@@ -335,7 +334,11 @@ class ChatActivity : AppCompatActivity() {
             mediaRecorder.release()
         }
 
+        compositeDisposable.clear()
+        chat.messagesList.clear()
+        messageAdapter.notifyDataSetChanged()
         chatRecyclerView.adapter = null
+        loaded = false
     }
 
     fun chatSendMessageClick(view: View) {
@@ -347,9 +350,36 @@ class ChatActivity : AppCompatActivity() {
                 .addOnSuccessListener {
                     database.child("chats").child(receiverRoom!!).child("messages").push()
                         .setValue(message)
+                    sendNotification(message)
                 }.addOnFailureListener {}
+            database.child("chats").child(senderRoom!!).child("timestamp").setValue(
+                DateTimeFormatter.ISO_INSTANT.format(Instant.now())).addOnSuccessListener {
+                database.child("chats").child(receiverRoom!!).child("timestamp").setValue(
+                    DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
+            }.addOnFailureListener {}
             messageTextView.setText("")
         }
+    }
+
+    private fun sendNotification(message: Message) {
+        val notificationData: HashMap<String, String> = HashMap<String, String>()
+        notificationData["title"] = "${chat.currentUser.firstName} ${chat.currentUser.surname}"
+        notificationData["content"] = when (message.type) {
+            "text" -> message.message
+            "photo" -> "Photo sent"
+            "audio" -> "Audio sent"
+            else -> "Message sent"
+        }
+        notificationData["sender"] = authentication.currentUser?.uid!!
+        notificationData["room_id"] = receiverRoom!!
+        val sendData = FCMSendData("/topics/$receiverRoom", notificationData)
+        compositeDisposable.add(ifcmService.sendNotification(sendData).subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread()).doOnNext {
+                //..
+            }
+            .doOnError { e->
+                Log.d("testy", "doOnError $e")
+            }.subscribe())
     }
 
     fun chatAttachmentClick(view: View?) {
@@ -507,7 +537,12 @@ class ChatActivity : AppCompatActivity() {
         }
         photoReferenceReceiver.putBytes(data).addOnCompleteListener {
             database.child("chats").child(receiverRoom!!).child("messages").push().setValue(message)
-        }
+        }.addOnSuccessListener { sendNotification(message) }
+        database.child("chats").child(senderRoom!!).child("timestamp").setValue(
+            DateTimeFormatter.ISO_INSTANT.format(Instant.now())).addOnSuccessListener {
+            database.child("chats").child(receiverRoom!!).child("timestamp").setValue(
+                DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
+        }.addOnFailureListener {}
         chatListLayout.updateLayoutParams<ConstraintLayout.LayoutParams> {
             bottomToTop = bottomMessageBar.id
         }
@@ -574,17 +609,25 @@ class ChatActivity : AppCompatActivity() {
         val data: ByteArray = audioFile?.readBytes() ?: ByteArray(0)
         val hash = MessageDigest.getInstance("SHA-256").digest(data)
         val audioId = BigInteger(1, hash).toString(16)
+        val mediaMetadataRetriever = MediaMetadataRetriever()
+        mediaMetadataRetriever.setDataSource(audioUri.toString())
+        val audioDuration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
         val audioReferenceSender = storageReference.child("chats").child(senderRoom!!).child("audios")
             .child(audioId)
         val audioReferenceReceiver = storageReference.child("chats").child(receiverRoom!!).child("audios")
             .child(audioId)
-        val message = Message(authentication.currentUser?.uid, "audio", audioId)
+        val message = Message(authentication.currentUser?.uid, "audio", audioId, audioDuration)
         audioReferenceSender.putFile(audioUri).addOnCompleteListener {
             database.child("chats").child(senderRoom!!).child("messages").push().setValue(message)
         }
         audioReferenceReceiver.putFile(audioUri).addOnCompleteListener {
             database.child("chats").child(receiverRoom!!).child("messages").push().setValue(message)
-        }
+        }.addOnSuccessListener { sendNotification(message) }
+        database.child("chats").child(senderRoom!!).child("timestamp").setValue(
+            DateTimeFormatter.ISO_INSTANT.format(Instant.now())).addOnSuccessListener {
+            database.child("chats").child(receiverRoom!!).child("timestamp").setValue(
+                DateTimeFormatter.ISO_INSTANT.format(Instant.now()))
+        }.addOnFailureListener {}
         bottomMessageBar.visibility = View.VISIBLE
         bottomAttachmentBar.visibility = View.INVISIBLE
         bottomPhotoBar.visibility = View.INVISIBLE

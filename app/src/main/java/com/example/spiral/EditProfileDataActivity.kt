@@ -1,6 +1,7 @@
 package com.example.spiral
 
 import android.app.DatePickerDialog
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -33,10 +34,23 @@ class EditProfileDataActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile_data)
         editProfileDataLayout = findViewById(R.id.edit_profile_data_layout)
+        when (applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                editProfileDataLayout.background = ResourcesCompat.getDrawable(resources, R.color.gray_2,
+                    applicationContext.theme)
+            }
+            Configuration.UI_MODE_NIGHT_NO -> {
+                editProfileDataLayout.background = ResourcesCompat.getDrawable(resources, R.color.blue_1,
+                    applicationContext.theme)
+            }
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                editProfileDataLayout.background = ResourcesCompat.getDrawable(resources, R.color.gray_2,
+                    applicationContext.theme)
+            }
+        }
         firstNameText = findViewById(R.id.edit_profile_data_first_name)
         surnameText = findViewById(R.id.edit_profile_data_surname)
         dateOfBirthText = findViewById(R.id.edit_profile_data_date_of_birth)
-
         genderText = findViewById(R.id.edit_profile_data_gender)
         val adapter = ArrayAdapter(this, R.layout.spinner, arrayOf("Female", "Male", "I don't wish to specify"))
         adapter.setDropDownViewResource(R.layout.spinner_item)

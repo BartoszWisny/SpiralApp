@@ -5,6 +5,7 @@
     android:id="@+id/edit_profile_photo_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="5dp"
     tools:context=".EditProfilePhotoActivity">
 
     <com.github.siyamed.shapeimageview.RoundedImageView
@@ -12,11 +13,11 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:src="@drawable/default_user_profile_photo"
+        app:layout_constraintBottom_toTopOf="@id/edit_profile_photo_layout_scroll"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/edit_profile_photo_layout_scroll"
         app:siBorderColor="@color/siBorderColor"
         app:siBorderWidth="1dp"
         app:siRadius="20dp"
@@ -88,7 +89,7 @@
                 app:backgroundTint="@null"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_profile_photo_gallery"/>
+                app:layout_constraintTop_toBottomOf="@id/edit_profile_photo_gallery" />
 
             <Button
                 android:id="@+id/edit_profile_photo_confirm"
@@ -110,7 +111,7 @@
                 app:backgroundTint="@null"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_profile_photo_camera"/>
+                app:layout_constraintTop_toBottomOf="@id/edit_profile_photo_camera" />
 
             <Button
                 android:id="@+id/edit_profile_photo_cancel"
@@ -132,7 +133,7 @@
                 app:backgroundTint="@null"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_profile_photo_confirm"/>
+                app:layout_constraintTop_toBottomOf="@id/edit_profile_photo_confirm" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

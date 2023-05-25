@@ -2,13 +2,16 @@ package com.example.spiral
 
 import android.content.Intent
 import android.content.res.Configuration
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.motion.widget.MotionLayout.TransitionListener
 import androidx.core.content.res.ResourcesCompat
 import com.google.firebase.auth.FirebaseAuth
+import java.net.InetAddress
+import java.net.UnknownHostException
+
 
 class OpenAppActivity : AppCompatActivity() {
     private lateinit var openAppLayout: MotionLayout
@@ -41,11 +44,21 @@ class OpenAppActivity : AppCompatActivity() {
                 val currentUser = authentication.currentUser
 
                 if (currentUser != null) {
-                    val intent = Intent(this@OpenAppActivity, MainActivity::class.java)
-                    startActivity(intent)
+                    if (isInternetAvailable()) {
+                        val intent = Intent(this@OpenAppActivity, MainActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        val intent = Intent(this@OpenAppActivity, NoInternetActivity::class.java)
+                        startActivity(intent)
+                    }
                 } else {
-                    val intent = Intent(this@OpenAppActivity, LoginActivity::class.java)
-                    startActivity(intent)
+                    if (isInternetAvailable()) {
+                        val intent = Intent(this@OpenAppActivity, LoginActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        val intent = Intent(this@OpenAppActivity, NoInternetActivity::class.java)
+                        startActivity(intent)
+                    }
                 }
             }
 
@@ -72,5 +85,10 @@ class OpenAppActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         openAppLayout.transitionState = savedInstanceState.getBundle("animationState")
+    }
+
+    fun isInternetAvailable(): Boolean {
+        val command = "ping -c 1 google.com"
+        return Runtime.getRuntime().exec(command).waitFor() == 0
     }
 }

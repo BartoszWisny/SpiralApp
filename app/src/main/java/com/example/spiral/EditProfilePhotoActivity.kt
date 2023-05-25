@@ -61,7 +61,8 @@ class EditProfilePhotoActivity : AppCompatActivity() {
                 userSettingsLayout.background = ResourcesCompat.getDrawable(resources, R.color.gray_2, applicationContext.theme)
             }
         }
-        profilePhotoImageView.visibility = View.GONE
+        profilePhotoImageView.visibility = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+            View.GONE else View.VISIBLE
         confirmPhotoButton.visibility = View.GONE
         cancelPhotoButton.visibility = View.GONE
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -111,7 +112,7 @@ class EditProfilePhotoActivity : AppCompatActivity() {
             val data: ByteArray = byteArrayOutputStream.toByteArray()
             val photoReference = storageReference.child("users").child(chat.currentUser.userId)
             photoReference.putBytes(data).addOnCompleteListener {
-                val snackbar = Snackbar.make(view, "Profile photo updated", Snackbar.LENGTH_SHORT)
+                val snackbar = Snackbar.make(view, "Profile photo updated!", Snackbar.LENGTH_SHORT)
                 snackbar.duration = 2000
                 snackbar.addCallback(
                     object : Snackbar.Callback() {
@@ -151,7 +152,8 @@ class EditProfilePhotoActivity : AppCompatActivity() {
     fun cancelPhotoClick(view: View) {
         photoPath = ""
         profilePhotoImageView.setImageResource(R.drawable.default_user_profile_photo)
-        profilePhotoImageView.visibility = View.GONE
+        profilePhotoImageView.visibility = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+            View.GONE else View.VISIBLE
         takePhotoButton.visibility = View.VISIBLE
         openGalleryButton.visibility = View.VISIBLE
         confirmPhotoButton.visibility = View.GONE

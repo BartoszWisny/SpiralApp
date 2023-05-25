@@ -130,40 +130,14 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 when (chat.viewPager?.currentItem) {
                     0 -> userChatsAdapter.filterChats(searchText.text.toString())
-                    1 -> userProfilesAdapter.filterProfiles(searchText.text.toString())
+                    1 -> userProfilesAdapter!!.filterProfiles(searchText.text.toString())
                     else -> userChatsAdapter.filterChats(searchText.text.toString())
                 }
             }
 
             override fun afterTextChanged(p0: Editable?) {}
         })
-//        database.child("users").addChildEventListener(
-//            object: ChildEventListener {
-//                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-//                    val user = snapshot.getValue(User::class.java)
-//
-//                    if (authentication.currentUser?.uid != user?.userId) {
-//                        chat.chatsData.add(user!!)
-//                        snapshot.key?.let { chat.chatsDataKeyList.add(it) }
-//                    }
-//
-//                    userChatsAdapter.notifyDataSetChanged()
-//                }
-//
-//                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
-//
-//                override fun onChildRemoved(snapshot: DataSnapshot) {
-//                    val index = chat.chatsDataKeyList.indexOf(snapshot.key)
-//                    chat.chatsData.removeAt(index)
-//                    chat.chatsDataKeyList.removeAt(index)
-//                    userChatsAdapter.notifyDataSetChanged()
-//                }
-//
-//                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-//
-//                override fun onCancelled(error: DatabaseError) {}
-//        })
-        database.child("users").addValueEventListener(object: ValueEventListener { // do the same on refresh
+        database.child("users").addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 chat.usersList.clear()
 
@@ -178,6 +152,9 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 userChatsAdapter.notifyDataSetChanged()
+                if (userProfilesAdapter != null) {
+                    userProfilesAdapter!!.notifyDataSetChanged()
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -273,11 +250,6 @@ class MainActivity : AppCompatActivity() {
         topMenuBarSearch.visibility = View.INVISIBLE
         searchCloseButton.visibility = View.INVISIBLE
         searchText.setText("")
-    }
-
-    fun qrCodeClick(view: View) {
-        // TODO
-        Toast.makeText(this, "QR Code click test", Toast.LENGTH_SHORT).show()
     }
 
     fun sendMessageClick(view: View) {
