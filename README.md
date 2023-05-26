@@ -1,11 +1,13 @@
-<img src="https://github.com/BartoszWisny/SpiralApp/blob/master/app/src/main/res/drawable/spiral_logo.png" align="right" style="margin:5px;width:200px;height:200px"/>
+<img src="https://github.com/BartoszWisny/SpiralApp/blob/master/app/src/main/res/drawable/spiral_logo.png" align="right" style="width:200px;height:200px"/>
 
 # SpiralApp
 
 Real time chat app project hosted on Google's [Firebase](https://firebase.google.com/). 
 
 ### What can you do in Spiral?
-User can log in directly using Google Account or use e-mail address to sign up. After successful verification, user is able to chat with other users using individual chat rooms. App supports sending pictures (from camera or gallery), audio recordings and text messages. If needed, user has the option to change their profile data and profile picture.
+User can log in directly using Google Account or use e-mail address to sign up. After successful verification, user is able to chat with other users using individual chat rooms.
+
+App supports sending pictures (from camera or gallery), audio recordings and text messages. If needed, user has the option to change their profile data and profile picture.
 
 ### Supported versions of Android and language versions
 To use the app, Android 11 (version code R, of API level at least 30) or higher is required. Supported languages: English, Polish.
