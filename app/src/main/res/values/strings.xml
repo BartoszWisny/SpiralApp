@@ -66,4 +66,10 @@
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="gender_not_specified">Gender not specified</string>
+    <string name="settings_no_language_changing">App\'s language is the same as system language.\nTo change language change system language!</string>
+    <string name="sign_up_error_password_too_short">Error: the password set is too short!</string>
+    <string name="sign_up_error_different_passwords">Error: the passwords given are different!</string>
+    <string name="sign_up_error_invalid_email">Error: the specified email address is invalid!</string>
+    <string name="sign_up_error_empty_fields">Error: not all the fields have been filled in!</string>
+    <string name="sign_up_error_user_already_exists">Error: the user with the specified email address already exists!</string>
 </resources>

@@ -81,8 +81,8 @@ class EditProfilePhotoActivity : AppCompatActivity() {
                 photoFromCamera = true
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 photoPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() + "/photo.jpg"
-                val cameraFile = photoPath?.let { File(it) }
-                val fileUri = cameraFile?.let { FileProvider.getUriForFile(applicationContext,
+                val cameraFile = File(photoPath)
+                val fileUri = cameraFile.let { FileProvider.getUriForFile(applicationContext,
                     "com.example.spiral.file_provider", it) }
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
                 camera.launch(intent)

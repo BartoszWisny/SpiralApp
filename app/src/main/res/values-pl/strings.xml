@@ -59,4 +59,10 @@
     <string name="gender_male">Mężczyzna</string>
     <string name="gender_female">Kobieta</string>
     <string name="gender_not_specified">Nie chcę podawać płci</string>
+    <string name="settings_no_language_changing">Język aplikacji jest taki sam jak język systemowy. Aby zmienić język, przejdź do ustawień telefonu.</string>
+    <string name="sign_up_error_password_too_short">Błąd: za krótkie hasło!</string>
+    <string name="sign_up_error_different_passwords">Błąd: podane hasła nie są takie same!</string>
+    <string name="sign_up_error_invalid_email">Błąd: nieprawidłowy adres e-mail!</string>
+    <string name="sign_up_error_empty_fields">Błąd: nie wypełniono wszystkich pól!</string>
+    <string name="sign_up_error_user_already_exists">Błąd: użytkownik o podanym adresie e-mail już istnieje!</string>
 </resources>

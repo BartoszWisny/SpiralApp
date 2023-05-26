@@ -52,7 +52,7 @@ class EditProfileDataActivity : AppCompatActivity() {
         surnameText = findViewById(R.id.edit_profile_data_surname)
         dateOfBirthText = findViewById(R.id.edit_profile_data_date_of_birth)
         genderText = findViewById(R.id.edit_profile_data_gender)
-        val adapter = ArrayAdapter(this, R.layout.spinner, arrayOf("Female", "Male", "I don't wish to specify"))
+        val adapter = ArrayAdapter(this, R.layout.spinner, arrayOf(getString(R.string.gender_female), getString(R.string.gender_male), getString(R.string.gender_not_specified)))
         adapter.setDropDownViewResource(R.layout.spinner_item)
         genderText.adapter = adapter
         val selection = when (chat.currentUser.gender) {
@@ -129,7 +129,11 @@ class EditProfileDataActivity : AppCompatActivity() {
         val firstName = firstNameText.text.toString()
         val surname = surnameText.text.toString()
         val dateOfBirth = dateOfBirthText.text.toString()
-        val gender = genderText.selectedItem.toString()
+        val gender = when (genderText.selectedItemId.toInt()) {
+            0 -> "Female"
+            1 -> "Male"
+            else -> "I don't wish to specify"
+        }
         val email = authentication.currentUser?.email!!
         if (checkData(firstName, surname, dateOfBirth, gender)) {
             if (!compareData(firstName, surname, dateOfBirth, gender)) {
