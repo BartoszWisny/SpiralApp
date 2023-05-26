@@ -97,6 +97,7 @@ class ChatActivity : AppCompatActivity() {
     private var audioFile: File? = null
     private var currentPosition = 0
     private var loaded = false
+    private lateinit var userId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,7 +141,7 @@ class ChatActivity : AppCompatActivity() {
         closeAudioButton = findViewById(R.id.chat_close_audio_button)
         sendAudioButton = findViewById(R.id.chat_send_audio_button)
         val storageReference = storage.getReferenceFromUrl(chat.storageUrl)
-        val userId = intent.getStringExtra("userId")!!
+        userId = intent.getStringExtra("userId")!!
         val photoReference = storageReference.child("users").child(userId)
         photoReference.downloadUrl.addOnSuccessListener {
             Picasso.get().load(it.toString()).placeholder(R.drawable.default_user_profile_photo).into(chatPhoto)
@@ -151,12 +152,12 @@ class ChatActivity : AppCompatActivity() {
         chatUsername.text = intent.getStringExtra("username")!!
         senderRoom = authentication.currentUser?.uid + userId
         receiverRoom = userId + authentication.currentUser?.uid
-        chat.roomSelected = receiverRoom
         messageAdapter = MessageAdapter(this, chat.messagesList, senderRoom!!)
         chatRecyclerView.layoutManager = LinearLayoutManager(this)
         (chatRecyclerView.layoutManager as LinearLayoutManager).stackFromEnd = true
         chatRecyclerView.adapter = messageAdapter
         chatRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
+        chatRecyclerView.itemAnimator = null
         database.child("chats").child(senderRoom!!).child("messages").addValueEventListener(
             object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -371,15 +372,11 @@ class ChatActivity : AppCompatActivity() {
             else -> getString(R.string.chat_message_sent)
         }
         notificationData["sender"] = authentication.currentUser?.uid!!
+        notificationData["receiver"] = userId
         notificationData["room_id"] = receiverRoom!!
         val sendData = FCMSendData("/topics/$receiverRoom", notificationData)
         compositeDisposable.add(ifcmService.sendNotification(sendData).subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread()).doOnNext {
-                //..
-            }
-            .doOnError { e->
-                Log.d("testy", "doOnError $e")
-            }.subscribe())
+            .observeOn(AndroidSchedulers.mainThread()).subscribe())
     }
 
     fun chatAttachmentClick(view: View?) {

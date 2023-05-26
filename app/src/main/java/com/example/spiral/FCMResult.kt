@@ -1,7 +1,7 @@
 package com.example.spiral
 
 class FCMResult {
-    private lateinit var message_id: String
+    private var message_id = ""
 
     fun getMessageId(): String {
         return message_id

@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.*
 import android.graphics.Bitmap.CompressFormat
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.firebase.auth.FirebaseAuth
@@ -20,13 +21,13 @@ class Chat {
     var messagesList = arrayListOf<Message>()
     val storageUrl = "gs://spiralapp-828a8.appspot.com"
     lateinit var currentUser: User
-    var roomSelected: String? = null
     private val storage = FirebaseStorage.getInstance()
     private val storageReference = storage.getReferenceFromUrl(storageUrl)
-    private var authentication = FirebaseAuth.getInstance()
+    private lateinit var authentication: FirebaseAuth
 
-    fun showNotification(context: Context, id: Int, title: String?, content: String?, sender: String?,
+    fun showNotification(context: Context, id: Int, title: String?, content: String?, sender: String?, receiver: String?,
         room_id: String?, intent: Intent?) {
+        authentication = FirebaseAuth.getInstance()
         var pendingIntent: PendingIntent? = null
 
         if (intent != null) {
@@ -61,7 +62,7 @@ class Chat {
 
             val notification = notificationBuilder.build()
 
-            if (!authentication.currentUser?.uid.equals(sender)) {
+            if (!authentication.currentUser?.uid.equals(sender) && authentication.currentUser?.uid.equals(receiver)) {
                 notificationManager.notify(id, notification)
             }
         }.addOnFailureListener {
@@ -79,7 +80,7 @@ class Chat {
 
             val notification = notificationBuilder.build()
 
-            if (!authentication.currentUser?.uid.equals(sender)) {
+            if (!authentication.currentUser?.uid.equals(sender) && authentication.currentUser?.uid.equals(receiver)) {
                 notificationManager.notify(id, notification)
             }
         }

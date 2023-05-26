@@ -8,6 +8,6 @@ class FCMService : FirebaseMessagingService() {
         super.onMessageReceived(message)
         val dataReceived: Map<String, String> = message.data
         chat.showNotification(this, dataReceived["sender"].hashCode(), dataReceived["title"],
-            dataReceived["content"], dataReceived["sender"], dataReceived["room_id"], null)
+            dataReceived["content"], dataReceived["sender"], dataReceived["receiver"], dataReceived["room_id"], null)
     }
 }
