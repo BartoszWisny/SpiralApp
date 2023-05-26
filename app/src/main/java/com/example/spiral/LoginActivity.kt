@@ -105,7 +105,7 @@ class LoginActivity : AppCompatActivity() {
             if (checkEmailAddress(email)) {
                 login(email, password, view)
             } else {
-                val snackbar = Snackbar.make(view, "Error: the specified email address is invalid!", Snackbar.LENGTH_SHORT)
+                val snackbar = Snackbar.make(view, getString(R.string.login_error_invalid_email), Snackbar.LENGTH_SHORT)
                 val snackbarView = snackbar.view
                 snackbarView.setBackgroundResource(R.drawable.item_shape)
                 snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
@@ -114,7 +114,7 @@ class LoginActivity : AppCompatActivity() {
                 snackbar.show()
             }
         } else {
-            val snackbar = Snackbar.make(view, "Error: not all the fields have been filled in!", Snackbar.LENGTH_SHORT)
+            val snackbar = Snackbar.make(view, getString(R.string.login_error_empty_fields), Snackbar.LENGTH_SHORT)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundResource(R.drawable.item_shape)
             snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
@@ -154,7 +154,7 @@ class LoginActivity : AppCompatActivity() {
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
                 } else {
-                    val snackbar = Snackbar.make(view, "Error: wrong email address or password!", Snackbar.LENGTH_SHORT)
+                    val snackbar = Snackbar.make(view, getString(R.string.login_error_wrong_email_or_password), Snackbar.LENGTH_SHORT)
                     val snackbarView = snackbar.view
                     snackbarView.setBackgroundResource(R.drawable.item_shape)
                     snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
@@ -252,7 +252,7 @@ class LoginActivity : AppCompatActivity() {
                                 val intent = Intent(this, MainActivity::class.java)
                                 startActivity(intent)
                             } else {
-                                val snackbar = Snackbar.make(googleViewHelper, "Error: Google login failed!",
+                                val snackbar = Snackbar.make(googleViewHelper, getString(R.string.login_error_google_login_failed),
                                     Snackbar.LENGTH_SHORT)
                                 val snackbarView = snackbar.view
                                 snackbarView.setBackgroundResource(R.drawable.item_shape)
@@ -266,7 +266,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
                 } else {
-                    val snackbar = Snackbar.make(googleViewHelper, "Error: Google login failed!", Snackbar.LENGTH_SHORT)
+                    val snackbar = Snackbar.make(googleViewHelper, getString(R.string.login_error_google_login_failed), Snackbar.LENGTH_SHORT)
                     val snackbarView = snackbar.view
                     snackbarView.setBackgroundResource(R.drawable.item_shape)
                     snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))

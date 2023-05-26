@@ -81,8 +81,8 @@ class EditProfilePhotoActivity : AppCompatActivity() {
                 photoFromCamera = true
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 photoPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() + "/photo.jpg"
-                val cameraFile = photoPath?.let { File(it) }
-                val fileUri = cameraFile?.let { FileProvider.getUriForFile(applicationContext,
+                val cameraFile = File(photoPath)
+                val fileUri = cameraFile.let { FileProvider.getUriForFile(applicationContext,
                     "com.example.spiral.file_provider", it) }
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
                 camera.launch(intent)
@@ -91,8 +91,7 @@ class EditProfilePhotoActivity : AppCompatActivity() {
             override fun onPermissionDenied(deniedPermissions: List<String>) {}
         }
         TedPermission.create().setScreenOrientation(resources.configuration.orientation)
-            .setPermissionListener(permissionListener).setDeniedMessage("Permission denied. If you want to take photos with"
-                    + " the camera, grant permission in the settings.").setGotoSettingButtonText("Settings")
+            .setPermissionListener(permissionListener).setDeniedMessage(getString(R.string.no_permission_camera)).setGotoSettingButtonText("Settings")
             .setPermissions(android.Manifest.permission.CAMERA).check()
     }
 
@@ -121,8 +120,7 @@ class EditProfilePhotoActivity : AppCompatActivity() {
             override fun onPermissionDenied(deniedPermissions: List<String>) {}
         }
         TedPermission.create().setScreenOrientation(resources.configuration.orientation)
-            .setPermissionListener(permissionListener).setDeniedMessage("Permission denied. If you want to select images from"
-                    + " the gallery, grant permission in the settings.").setGotoSettingButtonText("Settings")
+            .setPermissionListener(permissionListener).setDeniedMessage(getString(R.string.no_permission_gallery)).setGotoSettingButtonText("Settings")
             .setPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE).check()
     }
 
@@ -147,7 +145,7 @@ class EditProfilePhotoActivity : AppCompatActivity() {
             val data: ByteArray = byteArrayOutputStream.toByteArray()
             val photoReference = storageReference.child("users").child(chat.currentUser.userId)
             photoReference.putBytes(data).addOnCompleteListener {
-                val snackbar = Snackbar.make(view, "Profile photo updated!", Snackbar.LENGTH_SHORT)
+                val snackbar = Snackbar.make(view, getString(R.string.edit_profile_photo_profile_photo_updated), Snackbar.LENGTH_SHORT)
                 snackbar.duration = 2000
                 snackbar.addCallback(
                     object : Snackbar.Callback() {
@@ -164,7 +162,7 @@ class EditProfilePhotoActivity : AppCompatActivity() {
                 textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 snackbar.show()
             }.addOnFailureListener {
-                val snackbar = Snackbar.make(view, "Unable to upload photo", Snackbar.LENGTH_SHORT)
+                val snackbar = Snackbar.make(view, getString(R.string.edit_profile_photo_upload_failure), Snackbar.LENGTH_SHORT)
                 snackbar.duration = 2000
                 snackbar.addCallback(
                     object : Snackbar.Callback() {

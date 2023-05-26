@@ -138,7 +138,7 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                     audioPath = it.toString()
                     audioMinutes = TimeUnit.MILLISECONDS.toMinutes(audioDuration!!)
                     audioSeconds = TimeUnit.MILLISECONDS.toSeconds(audioDuration) % 60L
-                    holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                    holder.audioSentTime.text = "$audioMinutes:" + String.format("%02d", audioSeconds)
                     holder.playPauseAudioSentButton.isEnabled = true
                 }.addOnFailureListener {}
                 var startClick = true
@@ -156,7 +156,7 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                     audioMinutes = TimeUnit.MILLISECONDS.toMinutes(holder.mediaPlayer.duration.toLong())
                     audioSeconds = TimeUnit.MILLISECONDS.toSeconds(holder.mediaPlayer.duration.toLong()) % 60L
                     holder.audioWaveViewSent.progress = 0F
-                    holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                    holder.audioSentTime.text = "$audioMinutes:" + String.format("%02d", audioSeconds)
                     holder.mediaPlayer.stop()
                     holder.mediaPlayer.reset()
                 }
@@ -185,7 +185,7 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                             audioSeconds = TimeUnit.MILLISECONDS.toSeconds((holder.mediaPlayer.duration
                                     - holder.mediaPlayer.currentPosition).toLong()) % 60L
                             (context as Activity).runOnUiThread {
-                                holder.audioSentTime.text = audioMinutes.toString() + ":" + String.format("%02d",
+                                holder.audioSentTime.text = "$audioMinutes:" + String.format("%02d",
                                     audioSeconds)
                                 (holder.playPauseAudioSentButton as MaterialButton).icon = ResourcesCompat.getDrawable(
                                     context.resources, R.drawable.pause_icon, context.theme)
@@ -213,7 +213,7 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                     audioPath = it.toString()
                     audioMinutes = TimeUnit.MILLISECONDS.toMinutes(audioDuration!!)
                     audioSeconds = TimeUnit.MILLISECONDS.toSeconds(audioDuration) % 60L
-                    holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                    holder.audioReceivedTime.text = "$audioMinutes:" + String.format("%02d", audioSeconds)
                     holder.playPauseAudioReceivedButton.isEnabled = true
                 }.addOnFailureListener {}
                 var startClick = true
@@ -231,7 +231,7 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                     audioMinutes = TimeUnit.MILLISECONDS.toMinutes(holder.mediaPlayer.duration.toLong())
                     audioSeconds = TimeUnit.MILLISECONDS.toSeconds(holder.mediaPlayer.duration.toLong()) % 60L
                     holder.audioWaveViewReceived.progress = 0F
-                    holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                    holder.audioReceivedTime.text = "$audioMinutes:" + String.format("%02d", audioSeconds)
                     holder.mediaPlayer.stop()
                     holder.mediaPlayer.reset()
                 }
@@ -260,7 +260,7 @@ class MessageAdapter(private val context: Context, private val data: List<Messag
                             audioSeconds = TimeUnit.MILLISECONDS.toSeconds((holder.mediaPlayer.duration
                                     - holder.mediaPlayer.currentPosition).toLong()) % 60L
                             (context as Activity).runOnUiThread {
-                                holder.audioReceivedTime.text = audioMinutes.toString() + ":" + String.format("%02d",
+                                holder.audioReceivedTime.text = "$audioMinutes:" + String.format("%02d",
                                     audioSeconds)
                                 (holder.playPauseAudioReceivedButton as MaterialButton).icon = ResourcesCompat.getDrawable(
                                     context.resources, R.drawable.pause_icon, context.theme)

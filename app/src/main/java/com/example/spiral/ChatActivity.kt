@@ -198,7 +198,7 @@ class ChatActivity : AppCompatActivity() {
                     audioTime = System.currentTimeMillis() - audioStart
                     audioMinutes = TimeUnit.MILLISECONDS.toMinutes(audioTime)
                     audioSeconds = TimeUnit.MILLISECONDS.toSeconds(audioTime) % 60L
-                    audioMessageTime.text = audioMinutes.toString() + ":" + String.format("%02d", audioSeconds)
+                    audioMessageTime.text = "$audioMinutes:" + String.format("%02d", audioSeconds)
                     currentMaxAmplitude = mediaRecorder.maxAmplitude
                     audioRecordView.update(currentMaxAmplitude)
                 }
@@ -251,7 +251,7 @@ class ChatActivity : AppCompatActivity() {
         photoPath = savedInstanceState.getString("photoPath")
         photoFromCamera = savedInstanceState.getBoolean("photoFromCamera")
         audioPath = savedInstanceState.getString("audioPath")
-        audioMessageTime.text = "0:00"
+        audioMessageTime.text = getString(R.string.chat_audio_sent_default_length)
 
         if (bottomPhotoBarVisibility) {
             chatListLayout.updateLayoutParams<ConstraintLayout.LayoutParams> {
@@ -366,9 +366,9 @@ class ChatActivity : AppCompatActivity() {
         notificationData["title"] = "${chat.currentUser.firstName} ${chat.currentUser.surname}"
         notificationData["content"] = when (message.type) {
             "text" -> message.message
-            "photo" -> "Photo sent"
-            "audio" -> "Audio sent"
-            else -> "Message sent"
+            "photo" -> getString(R.string.chat_photo_sent)
+            "audio" -> getString(R.string.chat_audio_sent)
+            else -> getString(R.string.chat_message_sent)
         }
         notificationData["sender"] = authentication.currentUser?.uid!!
         notificationData["room_id"] = receiverRoom!!
@@ -404,8 +404,7 @@ class ChatActivity : AppCompatActivity() {
             override fun onPermissionDenied(deniedPermissions: List<String>) {}
         }
         TedPermission.create().setScreenOrientation(resources.configuration.orientation)
-            .setPermissionListener(permissionListener).setDeniedMessage("Permission denied. If you want to select images from"
-            + " the gallery, grant permission in the settings.").setGotoSettingButtonText("Settings")
+            .setPermissionListener(permissionListener).setDeniedMessage(getString(R.string.no_permission_gallery)).setGotoSettingButtonText("Settings")
             .setPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE).check()
     }
 
@@ -441,8 +440,7 @@ class ChatActivity : AppCompatActivity() {
             override fun onPermissionDenied(deniedPermissions: List<String>) {}
         }
         TedPermission.create().setScreenOrientation(resources.configuration.orientation)
-            .setPermissionListener(permissionListener).setDeniedMessage("Permission denied. If you want to take photos with"
-            + " the camera, grant permission in the settings.").setGotoSettingButtonText("Settings")
+            .setPermissionListener(permissionListener).setDeniedMessage(getString(R.string.no_permission_camera)).setGotoSettingButtonText("Settings")
             .setPermissions(android.Manifest.permission.CAMERA).check()
     }
 
@@ -495,8 +493,7 @@ class ChatActivity : AppCompatActivity() {
             override fun onPermissionDenied(deniedPermissions: List<String>) {}
         }
         TedPermission.create().setScreenOrientation(resources.configuration.orientation)
-            .setPermissionListener(permissionListener).setDeniedMessage("Permission denied. If you want to record voice"
-            + " messages, grant permission in the settings.").setGotoSettingButtonText("Settings")
+            .setPermissionListener(permissionListener).setDeniedMessage(getString(R.string.no_permission_gallery)).setGotoSettingButtonText("Settings")
             .setPermissions(android.Manifest.permission.RECORD_AUDIO).check()
     }
 
@@ -595,7 +592,7 @@ class ChatActivity : AppCompatActivity() {
         bottomPhotoBar.visibility = View.INVISIBLE
         bottomAudioBar.visibility = View.INVISIBLE
         audioRecordView.recreate()
-        audioMessageTime.text = "0:00"
+        audioMessageTime.text = getString(R.string.chat_audio_sent_default_length)
         recordAudio = false
         (stopReloadAudioButton as MaterialButton).icon = ResourcesCompat.getDrawable(resources, R.drawable.stop_icon, theme)
         closeAudioButton.isEnabled = false
@@ -633,7 +630,7 @@ class ChatActivity : AppCompatActivity() {
         bottomPhotoBar.visibility = View.INVISIBLE
         bottomAudioBar.visibility = View.INVISIBLE
         audioRecordView.recreate()
-        audioMessageTime.text = "0:00"
+        audioMessageTime.text = getString(R.string.chat_audio_sent_default_length)
         recordAudio = false
         (stopReloadAudioButton as MaterialButton).icon = ResourcesCompat.getDrawable(resources, R.drawable.stop_icon, theme)
         closeAudioButton.isEnabled = false

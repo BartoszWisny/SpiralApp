@@ -68,7 +68,7 @@ class SignUpActivity : AppCompatActivity() {
         confirmPasswordText = findViewById(R.id.sign_up_confirm_password)
         dateOfBirthText.text = LocalDate.now().minusYears(18).format(dateFormatter).toString()
         authentication = FirebaseAuth.getInstance()
-        val adapter = ArrayAdapter(this, R.layout.spinner, arrayOf("Female", "Male", "I don't wish to specify"))
+        val adapter = ArrayAdapter(this, R.layout.spinner, arrayOf(getString(R.string.gender_female), getString(R.string.gender_male), R.string.gender_not_specified))
         adapter.setDropDownViewResource(R.layout.spinner_item)
         genderText.adapter = adapter
 
@@ -146,7 +146,11 @@ class SignUpActivity : AppCompatActivity() {
         val firstName = firstNameText.text.toString()
         val surname = surnameText.text.toString()
         val dateOfBirth = dateOfBirthText.text.toString()
-        val gender = genderText.selectedItem.toString()
+        val gender = when(genderText.selectedItemId.toInt()) {
+            0 -> "Female"
+            1 -> "Male"
+            else -> "I don't wish to specify"
+        }
         val email = emailText.text.toString()
         val password = passwordText.text.toString()
         val confirmPassword = confirmPasswordText.text.toString()
@@ -157,7 +161,7 @@ class SignUpActivity : AppCompatActivity() {
                     if (password.length >= 6) {
                         signUp(firstName, surname, dateOfBirth, gender, email, password, view)
                     } else {
-                        val snackbar = Snackbar.make(view, "Error: the password set is too short!", Snackbar.LENGTH_SHORT)
+                        val snackbar = Snackbar.make(view, getString(R.string.sign_up_error_password_too_short), Snackbar.LENGTH_SHORT)
                         val snackbarView = snackbar.view
                         snackbarView.setBackgroundResource(R.drawable.item_shape)
                         snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
@@ -166,7 +170,7 @@ class SignUpActivity : AppCompatActivity() {
                         snackbar.show()
                     }
                 } else {
-                    val snackbar = Snackbar.make(view, "Error: the passwords given are different!", Snackbar.LENGTH_SHORT)
+                    val snackbar = Snackbar.make(view, getString(R.string.sign_up_error_different_passwords), Snackbar.LENGTH_SHORT)
                     val snackbarView = snackbar.view
                     snackbarView.setBackgroundResource(R.drawable.item_shape)
                     snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
@@ -175,7 +179,7 @@ class SignUpActivity : AppCompatActivity() {
                     snackbar.show()
                 }
             } else {
-                val snackbar = Snackbar.make(view, "Error: the specified email address is invalid!", Snackbar.LENGTH_SHORT)
+                val snackbar = Snackbar.make(view, getString(R.string.sign_up_error_invalid_email), Snackbar.LENGTH_SHORT)
                 val snackbarView = snackbar.view
                 snackbarView.setBackgroundResource(R.drawable.item_shape)
                 snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
@@ -184,7 +188,7 @@ class SignUpActivity : AppCompatActivity() {
                 snackbar.show()
             }
         } else {
-            val snackbar = Snackbar.make(view, "Error: not all the fields have been filled in!", Snackbar.LENGTH_SHORT)
+            val snackbar = Snackbar.make(view, getString(R.string.sign_up_error_empty_fields), Snackbar.LENGTH_SHORT)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundResource(R.drawable.item_shape)
             snackbar.setTextColor(ResourcesCompat.getColor(resources, R.color.snackbarText, application.theme))
@@ -213,7 +217,7 @@ class SignUpActivity : AppCompatActivity() {
                     val intent = Intent(this@SignUpActivity, MainActivity::class.java)
                     startActivity(intent)
                 } else {
-                    val snackbar = Snackbar.make(view, "Error: the user with the specified email address already exists!",
+                    val snackbar = Snackbar.make(view, getString(R.string.sign_up_error_user_already_exists),
                         Snackbar.LENGTH_SHORT)
                     val snackbarView = snackbar.view
                     snackbarView.setBackgroundResource(R.drawable.item_shape)
