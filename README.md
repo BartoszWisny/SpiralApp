@@ -1,4 +1,5 @@
 <img src="https://github.com/BartoszWisny/SpiralApp/blob/master/app/src/main/res/drawable/spiral_logo.png" align="right" style="margin:5px;width:200px;height:200px"/>
+
 # SpiralApp
 
 Real time chat app project hosted on Google's [Firebase](https://firebase.google.com/). 
