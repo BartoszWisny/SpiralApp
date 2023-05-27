@@ -62,7 +62,7 @@ class Chat {
 
             val notification = notificationBuilder.build()
 
-            if (!authentication.currentUser?.uid.equals(sender) && authentication.currentUser?.uid.equals(receiver)) {
+            if (authentication.currentUser?.uid.equals(receiver)) {
                 notificationManager.notify(id, notification)
             }
         }.addOnFailureListener {
@@ -80,7 +80,7 @@ class Chat {
 
             val notification = notificationBuilder.build()
 
-            if (!authentication.currentUser?.uid.equals(sender) && authentication.currentUser?.uid.equals(receiver)) {
+            if (authentication.currentUser?.uid.equals(receiver)) {
                 notificationManager.notify(id, notification)
             }
         }
