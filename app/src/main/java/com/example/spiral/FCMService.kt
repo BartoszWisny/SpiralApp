@@ -7,7 +7,7 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         val dataReceived: Map<String, String> = message.data
-        chat.showNotification(this, dataReceived["sender"].hashCode(), dataReceived["title"],
+        chat.showNotification(applicationContext, dataReceived["sender"].hashCode(), dataReceived["title"],
             dataReceived["content"], dataReceived["sender"], dataReceived["receiver"], dataReceived["room_id"], null)
     }
 }

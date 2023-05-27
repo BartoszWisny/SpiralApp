@@ -36,7 +36,7 @@ class Chat {
         }
 
         val notificationChannelId = "com.example.spiral"
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE)
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationChannel = NotificationChannel(notificationChannelId, "Spiral", NotificationManager
             .IMPORTANCE_HIGH)
         notificationChannel.description = "Spiral"
@@ -44,7 +44,7 @@ class Chat {
         notificationChannel.lightColor = Color.BLUE
         notificationChannel.vibrationPattern = longArrayOf(0, 1000, 500, 1000)
         notificationChannel.enableVibration(true)
-        (notificationManager as NotificationManager).createNotificationChannel(notificationChannel)
+        notificationManager.createNotificationChannel(notificationChannel)
         val notificationBuilder = NotificationCompat.Builder(context, notificationChannelId)
         val photoReference = storageReference.child("users").child(sender!!)
         photoReference.getBytes(5 * 1024 * 1024).addOnSuccessListener {
