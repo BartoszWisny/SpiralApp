@@ -27,13 +27,13 @@ To use the app, Android 11 (version code R, of API level at least 30) or higher 
 ### Screenshots
 
 <div>
-  <img src="https://github.com/BartoszWisny/SpiralApp/assets/91944872/476a8406-f1a5-4157-a14e-53192a37020f" style="height:627px;width:297px"/>
-  <img src="https://github.com/BartoszWisny/SpiralApp/assets/91944872/938ac0ff-6647-452a-b830-6b0b88de42dc" style="height:627px;width:297px"/>
-  <img src="https://github.com/BartoszWisny/SpiralApp/assets/91944872/ae19873b-a079-4eca-bc4d-75f617a79f8e" style="height:627px;width:297px"/>
+  <img src="screenshots/screenshot1.jpg" style="height:627px;width:297px"/>
+  <img src="screenshots/screenshot2.jpg" style="height:627px;width:297px"/>
+  <img src="screenshots/screenshot3.jpg" style="height:627px;width:297px"/>
 </div>
 <div>
-  <img src="https://github.com/BartoszWisny/SpiralApp/assets/91944872/3591786b-cced-4470-a0f1-00de576a9d9a" style="height:627px;width:297px"/>
-  <img src="https://github.com/BartoszWisny/SpiralApp/assets/91944872/790407b0-2413-4051-a46c-efe28f25d5d0" style="height:627px;width:297px"/>
+  <img src="screenshots/screenshot4.jpg" style="height:627px;width:297px"/>
+  <img src="screenshots/screenshot5.jpg" style="height:627px;width:297px"/>
 </div>
 
 ### Authors
