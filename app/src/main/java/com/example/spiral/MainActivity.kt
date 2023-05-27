@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         chat.tabAdapter = TabAdapter(this)
         chat.viewPager = findViewById(R.id.main_pager)
         chat.viewPager?.adapter = chat.tabAdapter
+        chat.viewPager?.currentItem = 1
         chat.viewPager?.currentItem = 0
         bottomNavigationView.selectedItemId = R.id.user_chats
 
@@ -109,17 +110,7 @@ class MainActivity : AppCompatActivity() {
 
                 //when swiped from profile display - delete selected profile
                 if (position != 2) chat.tabAdapter?.selectedProfile = ""
-
-                // searchCloseClick(window.decorView)
-                if (chat.viewPager?.currentItem != 2) {
-                    searchButton.visibility = View.VISIBLE
-                } else {
-                    searchButton.visibility = View.INVISIBLE
-                }
-
-                settingsButton.visibility = View.VISIBLE
-                topMenuBarSearch.visibility = View.INVISIBLE
-                searchCloseButton.visibility = View.INVISIBLE
+                searchCloseClick(window.decorView)
             }
 
         })
@@ -253,10 +244,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendMessageClick(view: View) {
-
-    }
-
-    fun addToFriendsClick(view: View) {
 
     }
 
